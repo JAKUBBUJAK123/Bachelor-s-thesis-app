@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity , ScrollView, TextInput , Moda
 import { useState } from "react";
 
 import BtnNavbar from "../components/BtnNavbar";
-import { FetchFood } from "../components/FatSecretApiToken";
+
 
 export default function ScreenC({navigation}) {
     const [foodQuery , setFoodQuery] = useState("");
@@ -26,7 +26,7 @@ export default function ScreenC({navigation}) {
 
     const handleSearchFood = async(query) => {
         try {
-            const response = await fetch(`http://192.168.0.227:5000/api/search_food?query=${encodeURIComponent(query)}`);
+            const response = await fetch(`http://192.168.165.237:5000/api/search_food?query=${encodeURIComponent(query)}`);
             const data = await response.json();
             setResults(data)
         } catch (error) {

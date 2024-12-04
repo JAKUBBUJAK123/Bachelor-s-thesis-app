@@ -15,6 +15,12 @@ export default function ScreenD({navigation}) {
                 <TouchableOpacity style={styles.EditBtn}>
                     <Text style={styles.btnText}>Edit</Text>
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.EditBtn}>
+                    <Text style={styles.btnText} onPress={() => {navigation.navigate('RegisterScreen')}}>Register</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.EditBtn}>
+                    <Text style={styles.btnText} onPress={() => {navigation.navigate('LoginScreen')}}>Login</Text>
+                </TouchableOpacity>
             </View>
 
             <Text style={styles.sectionHeader}>Your Achievements</Text>
@@ -44,7 +50,7 @@ scrollContent: {
     marginTop : 30,
     paddingHorizontal: 20,
     alignItems: 'center',
-    paddingBottom: 80,
+    paddingBottom: 200,
 },
 Header: {
     fontSize: 28,
