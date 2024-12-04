@@ -40,6 +40,22 @@ export default function RegisterScreen({navigation}) {
         resetForm()
         navigation.navigate('LoginScreen')
     }
+
+    const fetchData = async () => {
+        const response = await fetch('http://192.168.0.227:5000/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json',
+            },
+            body:JSON.stringify({
+                firstName:firstName,
+                lastName:lastName,
+                email:email,
+                password:password
+            }),
+        });
+    }
+
     return (
         <View style={style.Container}>
             <TouchableOpacity style={style.goBackButton} onPress={() => navigation.goBack()}>
@@ -53,7 +69,7 @@ export default function RegisterScreen({navigation}) {
                 <TextInput style={style.input} placeholder="password" placeholderTextColor='#888' value={password} onChangeText={setPassword} secureTextEntry={true}/>
                 <TextInput style={style.input} placeholder="confirm password" placeholderTextColor='#888' value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true}/>
             </View>
-            <TouchableOpacity style={style.registerButton} onPress={validateForm}>
+            <TouchableOpacity style={style.registerButton} onPress={() => {validateForm() , fetchData()}}>
                     <Text style={style.buttonText}>Register</Text>
                 </TouchableOpacity>
         </View>
