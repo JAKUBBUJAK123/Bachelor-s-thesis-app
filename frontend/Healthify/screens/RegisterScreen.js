@@ -36,13 +36,11 @@ export default function RegisterScreen({navigation}) {
             Alert.alert("Passwords do not match please verify it!")
             return
         }
-        Alert.alert("Succesfully created an account")
-        resetForm()
-        navigation.navigate('LoginScreen')
+
     }
 
     const fetchData = async () => {
-        const response = await fetch('http://192.168.0.227:5000/api/register', {
+        const response = await fetch('http://192.168.55.109:5000/api/register', {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
@@ -54,6 +52,15 @@ export default function RegisterScreen({navigation}) {
                 password:password
             }),
         });
+        const data = await response.json();
+        if (response.ok){
+            Alert.alert("Succesfully created an account")
+            resetForm()
+            navigation.navigate('LoginScreen')
+        }else{
+            Alert.alert(data.error)
+            resetForm()
+        }
     }
 
     return (

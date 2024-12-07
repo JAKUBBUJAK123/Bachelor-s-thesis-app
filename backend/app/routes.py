@@ -10,25 +10,38 @@ def register_routes(app):
         return {'message' : "Hello from flask"}
 
 
-    @app.route('/register', methods=['POST'])
+    @app.route('/api/register', methods=['POST'])
     def register_user():
         data = request.get_json()
         
-        # Check for existing email
         existing_user = User.query.filter_by(email=data['email']).first()
         if existing_user:
-            print('error')
             return jsonify({"error": "Email already registered"}), 400
             
 
 
         new_user = User(
-            first_name=data['first_name'],
-            last_name=data['last_name'],
+            first_name=data['firstName'],
+            last_name=data['lastName'],
             email=data['email'],
             password_hash=data['password']  # Use a hashing library like bcrypt here!
         )
         db.session.add(new_user)
         db.session.commit()
-        print('success')
         return jsonify({"message": "User registered successfully!"}), 201
+    
+
+    @app.route('/api/login' , methods=['POST'])
+    def login_user():
+        data = request.get_json()
+        print(data)
+        user = User.query.filter_by(email=data['email']).first()
+        print(user)
+        if not user:
+            return jsonify({'message' : "user not found"})
+        
+        if not user.password_hash == data['password'] :
+            return jsonify({'message': 'invalid password, please try again'})
+        
+        return jsonify({'message' : 'succesfully logged in'})
+    

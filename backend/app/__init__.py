@@ -13,13 +13,14 @@ def create_app():
 
     db.init_app(app=app)
 
-
     from .routes import register_routes
     from .controllers.fatsecret import bp
     register_routes(app)
     app.register_blueprint(bp)
 
-
+    @app.cli.command('init-db')
+    def init_db():
+        db.create_all()
 
 
     return app

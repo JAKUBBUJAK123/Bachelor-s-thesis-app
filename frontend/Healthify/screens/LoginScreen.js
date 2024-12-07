@@ -2,7 +2,33 @@ import React, { useState } from "react"
 import { Text, TextInput, View, StyleSheet, TouchableOpacity, Alert } from "react-native";
 
 export default function LoginScreen({ navigation }){
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('')
 
+    const HandleLogin = async () => {
+        if (!email || ! password) {
+            Alert.alert("Missing fields", 'Please enter your email and password')
+            return;
+        
+        };
+        const response = await fetch('http://192.168.55.109:5000/api/login' , {
+            method: 'POST',
+            headers : {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({email,password}),
+        });
+        const result = await response.json();
+
+        if (response.ok){
+            Alert.alert(result.message)
+            navigation.navigate('Home');
+        }
+        else{
+            Alert.alert(result.message)
+        };
+
+    }
 
     return (
         <View style={style.Container}>
@@ -11,11 +37,11 @@ export default function LoginScreen({ navigation }){
             </TouchableOpacity>
             <Text style={style.header}>Login</Text>
             <View style={style.form}>
-                <TextInput style={style.input} placeholder="email" placeholderTextColor='#888'/>
-                <TextInput style={style.input} placeholder="password" placeholderTextColor='#888'/>
+                <TextInput style={style.input} placeholder="email" placeholderTextColor='#888' value={email} onChangeText={setEmail} keyboardType="email-address"/>
+                <TextInput style={style.input} placeholder="password" placeholderTextColor='#888' value={password} onChangeText={setPassword} secureTextEntry={true}/>
             </View>
             <TouchableOpacity style={style.registerButton}>
-                    <Text style={style.buttonText}>Login</Text>
+                    <Text style={style.buttonText} onPress={HandleLogin}>Login</Text>
                 </TouchableOpacity>
         </View>
         
