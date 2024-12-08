@@ -2,7 +2,11 @@ import flask
 from . import db
 from flask import jsonify, request
 from .models import User
+import datetime
+import jwt
 
+
+AUTH_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
 
 def register_routes(app):
     @app.route('/')
@@ -41,4 +45,13 @@ def register_routes(app):
         if not user.check_password(data['password']):
             return jsonify({'message': 'invalid password, please try again'}), 401
         
-        return jsonify({'message' : 'succesfully logged in'}) , 200
+        token = jwt.encode(
+            {
+                'user_id' : user.id,
+                'exp' : datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+            },
+            AUTH_KEY,
+            algorithm='HS256'
+        )
+        
+        return jsonify({'message' : 'succesfully logged in' , 'token' : token}) , 200

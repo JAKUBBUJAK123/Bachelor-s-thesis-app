@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Modal, TextInput } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import BtnNavbar from "../components/BtnNavbar";
 
 export default function ScreenD({navigation}) {
 
-    const [isLoggedIn, setIsLoggedIn] = useState(true)
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [personalData, setPersonalData] = useState({
         firstName: '',
@@ -18,13 +19,25 @@ export default function ScreenD({navigation}) {
     })
 
 
+    useEffect(() => {
+        const fetchLoginStatus = async () => {
+            const token = await AsyncStorage.getItem("AuthToken");
+            setIsLoggedIn(!!token);
+        };
+
+        fetchLoginStatus();
+    }, []);
+
     const handleSave = () => {
         setIsModalVisible(false)
         Alert.alert("Profile updated" , "Your profile has been updated")
     };
 
-
-
+    const handleLogout = async () => {
+        await AsyncStorage.removeItem("AuthToken");
+        setIsLoggedIn(false);
+        Alert.alert("Logged out successfully");
+    };
 
 
     return (
@@ -37,9 +50,14 @@ export default function ScreenD({navigation}) {
                 <Text style={styles.nicknameText}>{personalData.nickname === "" ? 'My nickname' : personalData.nickname}</Text>
 
                 {isLoggedIn && (
+                    <>
                     <TouchableOpacity style={[styles.EditBtn , styles.primaryBtn]} onPress={() => {setIsModalVisible(true)}}>
                        <Text style={styles.btnText}>Edit</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={styles.EditBtn}>
+                        <Text style={styles.btnText} onPress={handleLogout}>Logout</Text>
+                    </TouchableOpacity>
+                    </>
                 )}
 
                 {!isLoggedIn && (
