@@ -1,9 +1,32 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Modal, TextInput } from "react-native";
 
 import BtnNavbar from "../components/BtnNavbar";
 
 export default function ScreenD({navigation}) {
+
+    const [isLoggedIn, setIsLoggedIn] = useState(true)
+    const [isModalVisible, setIsModalVisible] = useState(false)
+    const [personalData, setPersonalData] = useState({
+        firstName: '',
+        lastName: '',
+        nickname: '',
+        Gender: '',
+        Weight: '',
+        Height: '',
+        ProfilePicture: '',
+    })
+
+
+    const handleSave = () => {
+        setIsModalVisible(false)
+        Alert.alert("Profile updated" , "Your profile has been updated")
+    };
+
+
+
+
+
     return (
         <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -11,17 +34,48 @@ export default function ScreenD({navigation}) {
 
             <View style={styles.profileStyle}>
                 <Image source={require('../assets/profile-picture.png')} style={styles.image}/>
-                <Text style={styles.nicknameText}>My Nickname</Text>
-                <TouchableOpacity style={styles.EditBtn}>
-                    <Text style={styles.btnText}>Edit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.EditBtn}>
-                    <Text style={styles.btnText} onPress={() => {navigation.navigate('RegisterScreen')}}>Register</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.EditBtn}>
-                    <Text style={styles.btnText} onPress={() => {navigation.navigate('LoginScreen')}}>Login</Text>
-                </TouchableOpacity>
+                <Text style={styles.nicknameText}>{personalData.nickname === "" ? 'My nickname' : personalData.nickname}</Text>
+
+                {isLoggedIn && (
+                    <TouchableOpacity style={[styles.EditBtn , styles.primaryBtn]} onPress={() => {setIsModalVisible(true)}}>
+                       <Text style={styles.btnText}>Edit</Text>
+                    </TouchableOpacity>
+                )}
+
+                {!isLoggedIn && (
+                    <>
+                    <TouchableOpacity style={[styles.EditBtn , styles.secondaryBtn]}>
+                        <Text style={styles.btnText} onPress={() => {navigation.navigate('RegisterScreen')}}>Register</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.EditBtn , , styles.secondaryBtn]}>
+                        <Text style={styles.btnText} onPress={() => {navigation.navigate('LoginScreen')}}>Login</Text>
+                    </TouchableOpacity>
+                    </>
+                )}
             </View>
+
+            <Modal visible={isModalVisible} animationType="slide" transparent={true}>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalHeader}>Edit personal informations</Text>
+                        <TextInput style={styles.modalInput} placeholder="First name" value={personalData.firstName} onChangeText={(t) => setPersonalData({...personalData , firstName: t})}/>
+                        <TextInput style={styles.modalInput} placeholder="Last name" value={personalData.lastName} onChangeText={(t) => setPersonalData({...personalData , lastName: t})}/>
+                        <TextInput style={styles.modalInput} placeholder="Nickname" value={personalData.nickname} onChangeText={(t) => setPersonalData({...personalData , nickname: t})}/>
+                        <TextInput style={styles.modalInput} placeholder="Gender" value={personalData.Gender} onChangeText={(t) => setPersonalData({...personalData , Gender: t})}/>
+                        <TextInput style={styles.modalInput} placeholder="Weight" value={personalData.Weight} onChangeText={(t) => setPersonalData({...personalData , Weight: t})}/>
+                        <TextInput style={styles.modalInput} placeholder="Height" value={personalData.Height} onChangeText={(t) => setPersonalData({...personalData , Height: t})}/>
+                        <TextInput style={styles.modalInput} placeholder="Profile picture" value={personalData.ProfilePicture} onChangeText={(t) => setPersonalData({...personalData , ProfilePicture: t})}/>
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity style={[styles.EditBtn , styles.primaryBtn]} onPress={handleSave}>
+                                <Text style={styles.btnText}>Save</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.EditBtn , styles.secondaryBtn]} onPress={() => {setIsModalVisible(false)}}>
+                                <Text style={styles.btnText}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
 
             <Text style={styles.sectionHeader}>Your Achievements</Text>
             <View style={styles.Achievements}>
@@ -86,6 +140,12 @@ EditBtn: {
     borderRadius: 10,
     marginTop: 10,
 },
+primaryBtn : {
+    backgroundColor: "#1e9c1c",
+},
+secondaryBtn : {
+    backgroundColor: "#555",
+},
 btnText: {
     color: '#fff',
     fontSize: 16,
@@ -132,5 +192,37 @@ navbarContainer: {
     width: '100%',
     backgroundColor: '#262322',
     paddingVertical: 10,
+},
+modalContainer: {
+    flex : 1,
+    justifyContent: 'center',
+    alignItems : 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.7)"
+},
+modalContent : {
+    width : '90%',
+    backgroundColor : '#FFF',
+    padding : 20,
+    borderRadius : 10,
+    alignItems: 'center'
+},
+modalHeader : {
+    fontSize : 24,
+    fontWeight : 'bold',
+    marginBottom: 20
+},
+modalInput : {
+    width : '100%',
+    padding: 10,
+    borderWidth: 1,
+    borderRadius : 10,
+    borderColor: '#CCC',
+    marginBottom: 15,
+    fontSize : 15
+},
+buttonContainer : {
+    flexDirection : 'row',
+    justifyContent : 'space-between',
+    width: '95%'
 },
 });
