@@ -19,13 +19,13 @@ def register_routes(app):
             return jsonify({"error": "Email already registered"}), 400
             
 
-
         new_user = User(
             first_name=data['firstName'],
             last_name=data['lastName'],
             email=data['email'],
-            password_hash=data['password']  # Use a hashing library like bcrypt here!
         )
+        new_user.set_password(data['password'])
+
         db.session.add(new_user)
         db.session.commit()
         return jsonify({"message": "User registered successfully!"}), 201
@@ -34,14 +34,11 @@ def register_routes(app):
     @app.route('/api/login' , methods=['POST'])
     def login_user():
         data = request.get_json()
-        print(data)
         user = User.query.filter_by(email=data['email']).first()
-        print(user)
         if not user:
-            return jsonify({'message' : "user not found"})
+            return jsonify({'message' : "user not found"}), 404
         
-        if not user.password_hash == data['password'] :
-            return jsonify({'message': 'invalid password, please try again'})
+        if not user.check_password(data['password']):
+            return jsonify({'message': 'invalid password, please try again'}), 401
         
-        return jsonify({'message' : 'succesfully logged in'})
-    
+        return jsonify({'message' : 'succesfully logged in'}) , 200
