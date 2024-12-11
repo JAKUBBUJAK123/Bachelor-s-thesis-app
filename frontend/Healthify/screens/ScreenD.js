@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Modal, TextInput} from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Picker} from '@react-native-picker/picker';
+import { updatePersonalUserInformations, fetchPersonalUserInfomations, handleLogout } from "../services/apiService";
 
 import BtnNavbar from "../components/BtnNavbar";
 
@@ -30,26 +31,16 @@ export default function ScreenD({navigation}) {
         fetchLoginStatus();
     }, []);
 
+
     useEffect(() =>{
-        const fetchPersonalData = async () => {
-            const token = await AsyncStorage.getItem("AuthToken");
-            const response = await fetch('http://192.168.0.227:5000/api/user' , {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (response.ok){
-                data = await response.json();
-                console.log("Fetched data:", data);
-                setPersonalData(data);
-            }
-        };
-        if(isLoggedIn===true){
-            fetchPersonalData();
+        const fetchData = async () => {
+            const data = await fetchPersonalUserInfomations();
+            setPersonalData(data)
         }
-    } , [])
+        if (isLoggedIn){
+            fetchData()
+        }
+    } , [isLoggedIn])
 
     const handleSave = async () => {
         const token = await AsyncStorage.getItem("AuthToken");
@@ -70,16 +61,16 @@ export default function ScreenD({navigation}) {
         
     };
 
-    const handleLogout = async () => {
-        await AsyncStorage.removeItem("AuthToken");
+    const handleUserLogout = async () => {
+        await handleLogout();
         setPersonalData({
             firstName: '',
             lastName: '',
             nickname: '',
-            age: 0,
+            age: '',
             Gender: '',
-            Weight: 0,
-            Height: 0,
+            Weight: '',
+            Height: '',
             ProfilePicture: '',
         });
         setIsLoggedIn(false);
@@ -109,7 +100,7 @@ export default function ScreenD({navigation}) {
                        <Text style={styles.btnText}>Edit</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.EditBtn}>
-                        <Text style={styles.btnText} onPress={handleLogout}>Logout</Text>
+                        <Text style={styles.btnText} onPress={handleUserLogout}>Logout</Text>
                     </TouchableOpacity>
                     </>
                 )}
@@ -133,7 +124,7 @@ export default function ScreenD({navigation}) {
                         <TextInput style={styles.modalInput} placeholder="First name" value={personalData.firstName} onChangeText={(t) => setPersonalData({...personalData , firstName: t})}/>
                         <TextInput style={styles.modalInput} placeholder="Last name" value={personalData.lastName} onChangeText={(t) => setPersonalData({...personalData , lastName: t})}/>
                         <TextInput style={styles.modalInput} placeholder="Nickname" value={personalData.nickname} onChangeText={(t) => setPersonalData({...personalData , nickname: t})}/>
-                        <TextInput style={styles.modalInput} placeholder="age" value={personalData.age} keyboardType="numeric" onChangeText={(t) => setPersonalData({...personalData , age: t})}/>
+                        <TextInput style={styles.modalInput} placeholder="age" value={personalData.age} keyboardType="numeric" onChangeText={(t) => {setPersonalData({...personalData , age: t})}}/>
                         <View style={styles.pickerContainer}>
                         <Picker
                                 selectedValue={personalData.Gender}
