@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Modal, TextInput } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Modal, TextInput} from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Picker} from '@react-native-picker/picker';
 
 import BtnNavbar from "../components/BtnNavbar";
 
@@ -12,9 +13,10 @@ export default function ScreenD({navigation}) {
         firstName: '',
         lastName: '',
         nickname: '',
+        age: 0,
         Gender: '',
-        Weight: '',
-        Height: '',
+        Weight: 0,
+        Height: 0,
         ProfilePicture: '',
     })
 
@@ -28,26 +30,78 @@ export default function ScreenD({navigation}) {
         fetchLoginStatus();
     }, []);
 
-    const handleSave = () => {
-        setIsModalVisible(false)
-        Alert.alert("Profile updated" , "Your profile has been updated")
+    useEffect(() =>{
+        const fetchPersonalData = async () => {
+            const token = await AsyncStorage.getItem("AuthToken");
+            const response = await fetch('http://192.168.0.227:5000/api/user' , {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.ok){
+                data = await response.json();
+                console.log("Fetched data:", data);
+                setPersonalData(data);
+            }
+        };
+        if(isLoggedIn===true){
+            fetchPersonalData();
+        }
+    } , [])
+
+    const handleSave = async () => {
+        const token = await AsyncStorage.getItem("AuthToken");
+        const response = await fetch('http://192.168.0.227:5000/api/user', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify(personalData)
+        });
+        if (response.ok){
+            setIsModalVisible(false)
+            Alert.alert("Profile updated" , "Your profile has been updated")
+        }else{
+            Alert.alert("Cannot update the profile")
+        }
+        
     };
 
     const handleLogout = async () => {
         await AsyncStorage.removeItem("AuthToken");
+        setPersonalData({
+            firstName: '',
+            lastName: '',
+            nickname: '',
+            age: 0,
+            Gender: '',
+            Weight: 0,
+            Height: 0,
+            ProfilePicture: '',
+        });
         setIsLoggedIn(false);
         Alert.alert("Logged out successfully");
     };
+
 
 
     return (
         <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
             <Text style={styles.Header}>My Profile Page</Text>
+            
 
             <View style={styles.profileStyle}>
                 <Image source={require('../assets/profile-picture.png')} style={styles.image}/>
                 <Text style={styles.nicknameText}>{personalData.nickname === "" ? 'My nickname' : personalData.nickname}</Text>
+                <Text style={styles.nicknameText}>Name: {personalData.firstName === "" ? '' : personalData.firstName} {personalData.lastName === "" ? '' : personalData.lastName}</Text>
+                <Text style={styles.nicknameText}>Age: {personalData.age === "" ? '' : personalData.age}</Text>
+                <Text style={styles.nicknameText}>Gender: {personalData.Gender === "" ? '' : personalData.Gender}</Text>
+                <Text style={styles.nicknameText}>Weight: {personalData.Weight === "" ? '' : personalData.Weight} kg</Text>
+                <Text style={styles.nicknameText}>Height: {personalData.Height === "" ? '' : personalData.Height} cm</Text>
 
                 {isLoggedIn && (
                     <>
@@ -79,9 +133,20 @@ export default function ScreenD({navigation}) {
                         <TextInput style={styles.modalInput} placeholder="First name" value={personalData.firstName} onChangeText={(t) => setPersonalData({...personalData , firstName: t})}/>
                         <TextInput style={styles.modalInput} placeholder="Last name" value={personalData.lastName} onChangeText={(t) => setPersonalData({...personalData , lastName: t})}/>
                         <TextInput style={styles.modalInput} placeholder="Nickname" value={personalData.nickname} onChangeText={(t) => setPersonalData({...personalData , nickname: t})}/>
-                        <TextInput style={styles.modalInput} placeholder="Gender" value={personalData.Gender} onChangeText={(t) => setPersonalData({...personalData , Gender: t})}/>
-                        <TextInput style={styles.modalInput} placeholder="Weight" value={personalData.Weight} onChangeText={(t) => setPersonalData({...personalData , Weight: t})}/>
-                        <TextInput style={styles.modalInput} placeholder="Height" value={personalData.Height} onChangeText={(t) => setPersonalData({...personalData , Height: t})}/>
+                        <TextInput style={styles.modalInput} placeholder="age" value={personalData.age} keyboardType="numeric" onChangeText={(t) => setPersonalData({...personalData , age: t})}/>
+                        <View style={styles.pickerContainer}>
+                        <Picker
+                                selectedValue={personalData.Gender}
+                                onValueChange={(itemValue) => setPersonalData({...personalData, Gender: itemValue})}
+                                style={styles.picker}
+                            >
+                                <Picker.Item label="Select Gender" value="" />
+                                <Picker.Item label="Male" value="Male" />
+                                <Picker.Item label="Female" value="Female" />
+                            </Picker>
+                        </View>
+                        <TextInput style={styles.modalInput} placeholder="Weight" value={personalData.Weight} keyboardType="numeric" onChangeText={(t) => setPersonalData({...personalData , Weight: t})}/>
+                        <TextInput style={styles.modalInput} placeholder="Height" value={personalData.Height} keyboardType="numeric" onChangeText={(t) => setPersonalData({...personalData , Height: t})}/>
                         <TextInput style={styles.modalInput} placeholder="Profile picture" value={personalData.ProfilePicture} onChangeText={(t) => setPersonalData({...personalData , ProfilePicture: t})}/>
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity style={[styles.EditBtn , styles.primaryBtn]} onPress={handleSave}>
@@ -242,5 +307,16 @@ buttonContainer : {
     flexDirection : 'row',
     justifyContent : 'space-between',
     width: '95%'
+},
+pickerContainer: {
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    marginBottom: 15,
+},
+picker: {
+    width: "100%",
+    height: 60,
 },
 });

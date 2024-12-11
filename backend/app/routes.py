@@ -4,9 +4,35 @@ from flask import jsonify, request
 from .models import User
 import datetime
 import jwt
+from functools import wraps
 
 
 AUTH_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization'].split(" ")[1]
+        
+        if not token:
+            return jsonify({'message': 'Token is missing'}), 401
+        
+        try:
+            data = jwt.decode(token, AUTH_KEY, algorithms=["HS256"])
+            current_user = User.query.filter_by(id=data['user_id']).first()
+            if not current_user:
+                return jsonify({'message': 'User not found'}), 404
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': 'Invalid token'}), 401
+        
+        return f(current_user, *args, **kwargs)
+    return decorated
+
+
 
 def register_routes(app):
     @app.route('/')
@@ -55,3 +81,33 @@ def register_routes(app):
         )
         
         return jsonify({'message' : 'succesfully logged in' , 'token' : token}) , 200
+    
+    @app.route('/api/user', methods=["GET"])
+    @token_required
+    def get_user_data(current_user):
+            return jsonify({
+        'firstName': current_user.first_name,
+        'lastName': current_user.last_name,
+        'nickname': current_user.nickname,
+        'age': current_user.age,
+        'Gender': current_user.gender,
+        'Weight': current_user.weight,
+        'Height': current_user.height,
+        'ProfilePicture': current_user.profile_picture
+    })
+
+    @app.route('/api/user', methods=['PUT'])
+    @token_required
+    def update_user_data(current_user):
+        data = request.get_json()
+        current_user.first_name = data.get('firstName', current_user.first_name)
+        current_user.last_name = data.get('lastName', current_user.last_name)
+        current_user.nickname = data.get('nickname', current_user.nickname)
+        current_user.age = data.get('age', current_user.age)
+        current_user.gender = data.get('Gender', current_user.gender)
+        current_user.weight = data.get('Weight', current_user.weight)
+        current_user.height = data.get('Height', current_user.height)
+        current_user.profile_picture = data.get('ProfilePicture', current_user.profile_picture)
+    
+        db.session.commit()
+        return jsonify({'message': 'Profile updated successfully'})

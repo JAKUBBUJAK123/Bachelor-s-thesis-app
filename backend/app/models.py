@@ -8,6 +8,12 @@ class User(db.Model):
     last_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
+    nickname =db.Column(db.String(255) , nullable=True)
+    age =db.Column(db.Integer() , nullable=True)
+    weight =db.Column(db.Integer() , nullable=True)
+    height =db.Column(db.Integer() , nullable=True)
+    gender =db.Column(db.String(255) , nullable=True)
+    profile_picture =db.Column(db.String(255) , nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password=password)
