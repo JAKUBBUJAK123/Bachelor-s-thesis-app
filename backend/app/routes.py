@@ -1,7 +1,7 @@
 import flask
 from . import db
 from flask import jsonify, request
-from .models import User
+from .models import User , Meal
 import datetime
 import jwt
 from functools import wraps
@@ -111,3 +111,48 @@ def register_routes(app):
     
         db.session.commit()
         return jsonify({'message': 'Profile updated successfully'})
+
+
+    @app.route('/api/meals', methods=['GET'])
+    @token_required
+    def get_meals(current_user):
+        meals = Meal.query.filter_by(user_id=current_user.id).all()
+        return jsonify([{
+            'id' : meal.id,
+            'name' : meal.name,
+            'calories' : meal.calories,
+            'carbs' : meal.carbs,
+            'protein' : meal.protein,
+            'fat' : meal.fat
+        }for meal in meals]
+        )
+    
+    @app.route('/api/meals' , methods=['POST'])
+    @token_required
+    def add_meals(current_user):
+        data = request.get_json()
+        meal = Meal(
+            name =data['name'],
+            calories=data['calories'],
+            carbs =data['carbs'],
+            protein = data['protein'],
+            fat = data['fat'],
+            user = current_user
+        )
+        db.session.add(meal)
+        db.session.commit()
+        return jsonify({'message' : "meal added succesfully"}), 201
+    
+
+    @app.route('/api/meals/<int:meal_id>' , methods=['PUT'])
+    @token_required
+    def update_meal(meal_id, current_user):
+        data = request.get_json()
+        meal = Meal.query.filter_by(id=meal_id, user_id=current_user.id).first()
+
+        meal.calories = data.get('calories' , meal.calories)
+        meal.carbs = data.get('carbs' , meal.carbs)
+        meal.protein = data.get('protein' , meal.protein)
+        meal.fat = data.get('fat' , meal.fat)
+        db.session.commit()
+        return jsonify({"message" : 'succesffully updated meals'})

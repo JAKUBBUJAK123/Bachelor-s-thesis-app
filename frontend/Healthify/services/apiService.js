@@ -1,5 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+
+BASE_URL=' http://192.168.55.105:5000';
+
 const getAuthToken = async () => {
     return await AsyncStorage.getItem("AuthToken");
 };
@@ -11,7 +14,7 @@ export const fetchPersonalUserInfomations = async () => {
         throw new Error("Not authenticated");
     }
 
-    const response = await fetch('http://192.168.0.227:5000/api/user', {
+    const response = await fetch(`${BASE_URL}/api/user`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -34,7 +37,7 @@ export const updatePersonalUserInformations = async (updatedData) => {
         throw new Error("Not authenticated");
     }
 
-    const response = await fetch('http://192.168.0.227:5000/api/user', {
+    const response = await fetch(`${BASE_URL}/api/user`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -55,3 +58,63 @@ export const updatePersonalUserInformations = async (updatedData) => {
 export const handleLogout = async () => {
     await AsyncStorage.removeItem("AuthToken");
 };
+
+//For screenC
+export const handleSearchFood = async(query , results) => {
+    try {
+        const response = await fetch(`${BASE_URL}/api/search_food?query=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        results(data)
+    } catch (error) {
+        console.error("Error fetching food data:", error);
+    }
+    
+}
+
+//For screenC 
+export const fetchMeals = async () => {
+    const token = await getAuthToken();
+    if (!token) {
+        throw new Error("User not authicanted")
+    }
+    const response = await fetch(`${BASE_URL}/api/meals`, {
+        headers : {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    return response.json();
+}
+
+//For screenC
+export const addMeals = async (meal) => {
+    const token = await getAuthToken();
+    if (!token) {
+        throw new Error("User not authicanted")
+    }
+    const response = await fetch(`${BASE_URL}/api/meals` , {
+        method: 'POST',
+        headers : {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body : JSON.stringify(meal)
+    });
+    return response.json();
+}
+
+//For screenC
+export const updateMeals = async (mealId , updatedData) => {
+    const token = await getAuthToken();
+    if (!token) {
+        throw new Error("User not authicanted")};
+    
+    const response = await fetch(`${BASE_URL}/api/meals/${mealId}` , {
+        method : 'PUT',
+        headers : {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedData)
+    });
+    return response.json();
+}

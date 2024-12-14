@@ -12,7 +12,7 @@ export default function LoginScreen({ navigation }){
             return;
         
         };
-        const response = await fetch('http://192.168.0.227:5000/api/login' , {
+        const response = await fetch('http://192.168.55.105:5000/api/login' , {
             method: 'POST',
             headers : {
                 'Content-Type': 'application/json'

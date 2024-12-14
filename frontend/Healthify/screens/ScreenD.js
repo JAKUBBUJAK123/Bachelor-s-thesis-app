@@ -29,6 +29,7 @@ export default function ScreenD({navigation}) {
         };
 
         fetchLoginStatus();
+        
     }, []);
 
 
@@ -44,7 +45,7 @@ export default function ScreenD({navigation}) {
 
     const handleSave = async () => {
         const token = await AsyncStorage.getItem("AuthToken");
-        const response = await fetch('http://192.168.0.227:5000/api/user', {
+        const response = await fetch('http://192.168.55.105:5000/api/user', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

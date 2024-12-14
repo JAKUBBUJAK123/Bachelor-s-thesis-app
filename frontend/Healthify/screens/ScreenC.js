@@ -1,39 +1,35 @@
-import React from "react";
+import React, { useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity , ScrollView, TextInput , Modal, Button} from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { fetchMeals, updateMeals, addMeals } from "../services/apiService";
 
 import BtnNavbar from "../components/BtnNavbar";
+import { handleSearchFood } from "../services/apiService";
 
 
 export default function ScreenC({navigation}) {
     const [foodQuery , setFoodQuery] = useState("");
     const [results, setResults] = useState(null);
     const [meals, setMeals] = useState([
-        {id: 1 , name : "Breakfast" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
-        {id: 2 , name : "Dinner" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
-        {id: 3 , name : "Lunch" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
-        {id: 4 , name : "Supper" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
-    ]);
+      {id: 1 , name : "Breakfast" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
+      {id: 2 , name : "Dinner" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
+      {id: 3 , name : "Lunch" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
+      {id: 4 , name : "Supper" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
+  ]);
     const [modal , setModal] = useState(false);
     const [selectedMeal, setSelectedMeal] = useState(null)
     const [gram, setGram] = useState('100')
 
 
-    const addMeal = () => {
-        const NewMeal = {id : meals.length + 1, name : `Meal ${meals.length+ 1}`, macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }};
-        setMeals([...meals, NewMeal]);
-    };
 
-    const handleSearchFood = async(query) => {
-        try {
-            const response = await fetch(`http://192.168.165.237:5000/api/search_food?query=${encodeURIComponent(query)}`);
-            const data = await response.json();
-            setResults(data)
-        } catch (error) {
-            console.error("Error fetching food data:", error);
-        }
-        
-    }
+//   useEffect(() => {
+//     const fetchLoginStatus = async () => {
+//         const token = await AsyncStorage.getItem("AuthToken");
+//     };
+//
+//     fetchLoginStatus();
+// }, []);
+
 
     const addMacrosToMeal = (mealId, foodDescription, gram) => {
         const match = foodDescription.match(/Calories: (\d+)kcal \| Fat: ([\d.]+)g \| Carbs: ([\d.]+)g \| Protein: ([\d.]+)g/);
@@ -60,13 +56,37 @@ export default function ScreenC({navigation}) {
   }
 };
 
+useEffect(() => {
+  const loadMeals = async () => {
+    console.log("Starting to load meals");
+    const data = await fetchMeals();
+    console.log("Fetched meals:", data);
+    setMeals(data);
+  };
+  loadMeals();
+}, []);
+
+
+const handleAddMeal = async (newMeal) =>{
+  await addMeals(newMeal)
+  const updatedMeal = await fetchMeals();
+  setMeals(updatedMeal)
+}
+
+const handleUpdateMeal = async (mealId , updatedData) => {
+  await updateMeals(mealId, updatedData);
+  const meals = await fetchMeals();
+  setMeals(meals)
+}
+
+
     return (
 <View style={style.Container}>
   <Text style={style.Header}>Food Tracker</Text>
 
   <View style={style.wrapper}>
     <ScrollView contentContainerStyle={style.scrollContent}>
-      {meals.map((meal) => (
+    {meals.map((meal) => (
         <View key={meal.id} style={style.ListComponent}>
           <View>
             <Text style={style.listText}>{meal.name}</Text>
@@ -86,12 +106,6 @@ export default function ScreenC({navigation}) {
         </View>
       ))}
 
-      <View style={style.ListComponent}>
-        <TouchableOpacity onPress={addMeal}>
-          <Text style={style.listText}>Add another meal</Text>
-        </TouchableOpacity>
-      </View>
-
       <Modal visible={modal} animationType="slide" transparent={true} onRequestClose={() => setModal(false)}>
         <View style={style.modalOverlay}>
           <View style={style.modalContent}>
@@ -103,7 +117,7 @@ export default function ScreenC({navigation}) {
               value={foodQuery}
               onChangeText={setFoodQuery}
             />
-            <TouchableOpacity style={style.searchButton} onPress={() => handleSearchFood(foodQuery)}>
+            <TouchableOpacity style={style.searchButton} onPress={() => handleSearchFood(foodQuery,setResults)}>
               <Text style={style.searchButtonText}>Search</Text>
             </TouchableOpacity>
 

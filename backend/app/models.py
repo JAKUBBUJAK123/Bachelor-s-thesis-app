@@ -15,8 +15,22 @@ class User(db.Model):
     gender =db.Column(db.String(255) , nullable=True)
     profile_picture =db.Column(db.String(255) , nullable=True)
 
+    meals = db.relationship('Meal', back_populates='user')
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password=password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password=password)
+    
+
+class Meal(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100) , nullable=False)
+    calories = db.Column(db.Float() , nullable=False , default=0)
+    carbs = db.Column(db.Float() , nullable=False , default=0)
+    fat = db.Column(db.Float() , nullable=False, default=0)
+    protein = db.Column(db.Float() , nullable=False, default=0)
+
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False) 
+    user = db.relationship('User', back_populates='meals')
