@@ -117,6 +117,7 @@ def register_routes(app):
     @token_required
     def get_meals(current_user):
         meals = Meal.query.filter_by(user_id=current_user.id).all()
+        print(meals)
         return jsonify([{
             'id' : meal.id,
             'name' : meal.name,
@@ -131,17 +132,20 @@ def register_routes(app):
     @token_required
     def add_meals(current_user):
         data = request.get_json()
-        meal = Meal(
-            name =data['name'],
-            calories=data['calories'],
-            carbs =data['carbs'],
-            protein = data['protein'],
-            fat = data['fat'],
-            user = current_user
+        for i in data:
+            print(i)
+            meal = Meal(
+            name =i['name'],
+            calories=i['macros']['Calories'],
+            carbs =i['macros']['Carbs'],
+            protein = i['macros']['Protein'],
+            fat = i['macros']['Fat'],
+            user_id = current_user.id
         )
-        db.session.add(meal)
-        db.session.commit()
-        return jsonify({'message' : "meal added succesfully"}), 201
+            db.session.add(meal)
+            db.session.commit()
+        return jsonify({'message': "Meal added successfully"}), 201
+
     
 
     @app.route('/api/meals/<int:meal_id>' , methods=['PUT'])
@@ -150,9 +154,9 @@ def register_routes(app):
         data = request.get_json()
         meal = Meal.query.filter_by(id=meal_id, user_id=current_user.id).first()
 
-        meal.calories = data.get('calories' , meal.calories)
-        meal.carbs = data.get('carbs' , meal.carbs)
-        meal.protein = data.get('protein' , meal.protein)
-        meal.fat = data.get('fat' , meal.fat)
+        meal.calories = data.get('Calories' , meal.calories)
+        meal.carbs = data.get('Carbs' , meal.carbs)
+        meal.protein = data.get('Protein' , meal.protein)
+        meal.fat = data.get('Fat' , meal.fat)
         db.session.commit()
         return jsonify({"message" : 'succesffully updated meals'})

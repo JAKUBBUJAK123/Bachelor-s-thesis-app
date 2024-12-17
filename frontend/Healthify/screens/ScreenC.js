@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity , ScrollView, TextInput , Modal, Button} from "react-native";
 import { useState, useEffect } from "react";
 import { fetchMeals, updateMeals, addMeals } from "../services/apiService";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import BtnNavbar from "../components/BtnNavbar";
 import { handleSearchFood } from "../services/apiService";
@@ -11,25 +12,39 @@ export default function ScreenC({navigation}) {
     const [foodQuery , setFoodQuery] = useState("");
     const [results, setResults] = useState(null);
     const [meals, setMeals] = useState([
-      {id: 1 , name : "Breakfast" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
-      {id: 2 , name : "Dinner" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
-      {id: 3 , name : "Lunch" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
-      {id: 4 , name : "Supper" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
+      {id:1,name : "Breakfast" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
+      {id:2,name : "Dinner" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
+      {id:3,name : "Lunch" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
+      {id:4,name : "Supper" , macros : {Calories : 0, Carbs : 0 ,Protein: 0, Fat: 0 }},
   ]);
     const [modal , setModal] = useState(false);
     const [selectedMeal, setSelectedMeal] = useState(null)
     const [gram, setGram] = useState('100')
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
 
 
 
-//   useEffect(() => {
-//     const fetchLoginStatus = async () => {
-//         const token = await AsyncStorage.getItem("AuthToken");
-//     };
-//
-//     fetchLoginStatus();
-// }, []);
+    useEffect(() => {
+      const fetchLoginStatus = async () => {
+          const token = await AsyncStorage.getItem("AuthToken");
+          setIsLoggedIn(!!token);
+      };
 
+      fetchLoginStatus();
+      
+  }, [isLoggedIn]);
+
+    useEffect(() =>{
+        const fetchMeals = async () => {
+            
+            const data = await fetchMeals();
+            setMeals(data)
+            console.log(data)
+        }
+        if (isLoggedIn){
+            fetchMeals()
+        }
+    } , [isLoggedIn])
 
     const addMacrosToMeal = (mealId, foodDescription, gram) => {
         const match = foodDescription.match(/Calories: (\d+)kcal \| Fat: ([\d.]+)g \| Carbs: ([\d.]+)g \| Protein: ([\d.]+)g/);
@@ -56,15 +71,6 @@ export default function ScreenC({navigation}) {
   }
 };
 
-useEffect(() => {
-  const loadMeals = async () => {
-    console.log("Starting to load meals");
-    const data = await fetchMeals();
-    console.log("Fetched meals:", data);
-    setMeals(data);
-  };
-  loadMeals();
-}, []);
 
 
 const handleAddMeal = async (newMeal) =>{
@@ -150,6 +156,7 @@ const handleUpdateMeal = async (mealId , updatedData) => {
           </View>
         </View>
       </Modal>
+      <Button onPress={()=> {handleAddMeal(meals) ;console.log(meals)}} title="save"></Button>
     </ScrollView>
   </View>
   <BtnNavbar navigation={navigation} />

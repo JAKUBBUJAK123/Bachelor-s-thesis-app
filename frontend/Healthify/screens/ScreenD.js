@@ -32,11 +32,12 @@ export default function ScreenD({navigation}) {
         
     }, []);
 
-
     useEffect(() =>{
         const fetchData = async () => {
+            console.log('loading data')
             const data = await fetchPersonalUserInfomations();
             setPersonalData(data)
+            console.log(data)
         }
         if (isLoggedIn){
             fetchData()
@@ -45,7 +46,7 @@ export default function ScreenD({navigation}) {
 
     const handleSave = async () => {
         const token = await AsyncStorage.getItem("AuthToken");
-        const response = await fetch('http://192.168.55.105:5000/api/user', {
+        const response = await fetch('http://192.168.0.158:5000/api/user', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

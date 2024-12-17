@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
-BASE_URL=' http://192.168.55.105:5000';
+BASE_URL='http://192.168.0.158:5000';
 
 const getAuthToken = async () => {
     return await AsyncStorage.getItem("AuthToken");
@@ -78,12 +78,17 @@ export const fetchMeals = async () => {
         throw new Error("User not authicanted")
     }
     const response = await fetch(`${BASE_URL}/api/meals`, {
+        method: "GET",
         headers : {
             'Authorization': `Bearer ${token}`
         }
     });
-    return response.json();
+    data = await response.json();
+    print(data)
+    return data;
 }
+
+
 
 //For screenC
 export const addMeals = async (meal) => {
