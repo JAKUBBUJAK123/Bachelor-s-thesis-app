@@ -34,10 +34,8 @@ export default function ScreenD({navigation}) {
 
     useEffect(() =>{
         const fetchData = async () => {
-            console.log('loading data')
             const data = await fetchPersonalUserInfomations();
             setPersonalData(data)
-            console.log(data)
         }
         if (isLoggedIn){
             fetchData()

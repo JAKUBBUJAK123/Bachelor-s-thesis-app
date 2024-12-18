@@ -20,31 +20,31 @@ export default function ScreenC({navigation}) {
     const [modal , setModal] = useState(false);
     const [selectedMeal, setSelectedMeal] = useState(null)
     const [gram, setGram] = useState('100')
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    //const [isLoggedIn, setIsLoggedIn] = useState(false)
 
 
 
-    useEffect(() => {
-      const fetchLoginStatus = async () => {
-          const token = await AsyncStorage.getItem("AuthToken");
-          setIsLoggedIn(!!token);
-      };
+  //  useEffect(() => {
+  //    const fetchLoginStatus = async () => {
+  //        const token = await AsyncStorage.getItem("AuthToken");
+  //        setIsLoggedIn(!!token);
+  //    };
 
-      fetchLoginStatus();
-      
-  }, [isLoggedIn]);
+  //    fetchLoginStatus();
+  //    
+  //}, []);
 
     useEffect(() =>{
-        const fetchMeals = async () => {
+        const fetchData = async () => {
             
             const data = await fetchMeals();
             setMeals(data)
-            console.log(data)
+            console.log('data',data)
+            console.log('meals',meals)
         }
-        if (isLoggedIn){
-            fetchMeals()
-        }
-    } , [isLoggedIn])
+            fetchData()
+        
+    } , [])
 
     const addMacrosToMeal = (mealId, foodDescription, gram) => {
         const match = foodDescription.match(/Calories: (\d+)kcal \| Fat: ([\d.]+)g \| Carbs: ([\d.]+)g \| Protein: ([\d.]+)g/);
@@ -79,11 +79,34 @@ const handleAddMeal = async (newMeal) =>{
   setMeals(updatedMeal)
 }
 
-const handleUpdateMeal = async (mealId , updatedData) => {
-  await updateMeals(mealId, updatedData);
-  const meals = await fetchMeals();
-  setMeals(meals)
-}
+const handleUpdateMeal = async (updatedMeal) => {
+  const token = await AsyncStorage.getItem("AuthToken");
+  if (!token) {
+      throw new Error("User not authicanted")};
+  
+  const responsesList =[]    
+  for (const meal of meals) {
+    const updatedData = {
+        id: meal.id,
+        Calories: meal.macros.Calories,
+        Carbs: meal.macros.Carbs,
+        Protein: meal.macros.Protein,
+        Fat: meal.macros.Fat,
+        };
+      
+    const response = await fetch(`http://192.168.0.158:5000/api/meals` , {
+        method : 'PUT',
+        headers : {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedData)
+  });
+  const data = await response.json();
+  responsesList.push(data)
+  };
+  return responsesList;
+};
 
 
     return (
@@ -156,7 +179,8 @@ const handleUpdateMeal = async (mealId , updatedData) => {
           </View>
         </View>
       </Modal>
-      <Button onPress={()=> {handleAddMeal(meals) ;console.log(meals)}} title="save"></Button>
+      <Button onPress={()=> {handleAddMeal(meals) ;console.log(meals)}} title="generate meals"></Button>
+      <Button onPress={()=> {handleUpdateMeal(meals); console.log('put data',meals)}} title="save"></Button>
     </ScrollView>
   </View>
   <BtnNavbar navigation={navigation} />

@@ -26,11 +26,11 @@ class User(db.Model):
 
 class Meal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100) , nullable=False)
-    calories = db.Column(db.Float() , nullable=False , default=0)
-    carbs = db.Column(db.Float() , nullable=False , default=0)
-    fat = db.Column(db.Float() , nullable=False, default=0)
-    protein = db.Column(db.Float() , nullable=False, default=0)
+    name = db.Column(db.String(100) , nullable=True)
+    Calories = db.Column(db.Float() , nullable=False , default=0)
+    Carbs = db.Column(db.Float() , nullable=False , default=0)
+    Fat = db.Column(db.Float() , nullable=False, default=0)
+    Protein = db.Column(db.Float() , nullable=False, default=0)
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False) 
     user = db.relationship('User', back_populates='meals')

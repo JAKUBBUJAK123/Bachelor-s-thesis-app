@@ -24,10 +24,9 @@ export const fetchPersonalUserInfomations = async () => {
     if (!response.ok) {
         throw new Error("Failed to fetch user data");
     }
-
+    
     const data = await response.json();
     return data;
-
 }
 
 //For screenD
@@ -78,13 +77,17 @@ export const fetchMeals = async () => {
         throw new Error("User not authicanted")
     }
     const response = await fetch(`${BASE_URL}/api/meals`, {
-        method: "GET",
+        method: 'GET',
         headers : {
             'Authorization': `Bearer ${token}`
         }
     });
-    data = await response.json();
-    print(data)
+    if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+    }
+    console.log("Response status:", response.status);
+    const data = await response.json();
+    //console.log(data)
     return data;
 }
 

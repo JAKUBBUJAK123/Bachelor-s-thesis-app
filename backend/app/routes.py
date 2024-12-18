@@ -55,8 +55,16 @@ def register_routes(app):
             email=data['email'],
         )
         new_user.set_password(data['password'])
-
         db.session.add(new_user)
+        db.session.commit()
+
+        default_meals = [
+        Meal(name="Breakfast", user_id=new_user.id),
+        Meal(name="Lunch", user_id=new_user.id),
+        Meal(name="Dinner", user_id=new_user.id),
+        Meal(name="Supper", user_id=new_user.id),
+        ]
+        db.session.add_all(default_meals)
         db.session.commit()
         return jsonify({"message": "User registered successfully!"}), 201
     
@@ -117,23 +125,25 @@ def register_routes(app):
     @token_required
     def get_meals(current_user):
         meals = Meal.query.filter_by(user_id=current_user.id).all()
-        print(meals)
+              
         return jsonify([{
-            'id' : meal.id,
-            'name' : meal.name,
-            'calories' : meal.calories,
-            'carbs' : meal.carbs,
-            'protein' : meal.protein,
-            'fat' : meal.fat
-        }for meal in meals]
-        )
+        'id' : i.id,
+        'name' : i.name,
+        'macros' :{
+            'Calories' : i.Calories,
+            'Carbs' : i.Carbs,
+            'Protein' : i.Protein,
+            'Fat' : i.Fat
+            }
+        }for i in meals] ) ,201
+        
     
     @app.route('/api/meals' , methods=['POST'])
     @token_required
     def add_meals(current_user):
         data = request.get_json()
+        print(data)
         for i in data:
-            print(i)
             meal = Meal(
             name =i['name'],
             calories=i['macros']['Calories'],
@@ -148,15 +158,16 @@ def register_routes(app):
 
     
 
-    @app.route('/api/meals/<int:meal_id>' , methods=['PUT'])
+    @app.route('/api/meals' , methods=['PUT'])
     @token_required
-    def update_meal(meal_id, current_user):
+    def update_meal(current_user):
         data = request.get_json()
+        print(data)
+        meal_id = data.get('id')
         meal = Meal.query.filter_by(id=meal_id, user_id=current_user.id).first()
-
-        meal.calories = data.get('Calories' , meal.calories)
-        meal.carbs = data.get('Carbs' , meal.carbs)
-        meal.protein = data.get('Protein' , meal.protein)
-        meal.fat = data.get('Fat' , meal.fat)
+        meal.Calories = data.get('Calories' , meal.Calories)
+        meal.Carbs = data.get('Carbs' , meal.Carbs)
+        meal.Protein = data.get('Protein' , meal.Protein)
+        meal.Fat = data.get('Fat' , meal.Fat)
         db.session.commit()
-        return jsonify({"message" : 'succesffully updated meals'})
+        return jsonify({"message" : 'succesffully updated meals'}), 200
