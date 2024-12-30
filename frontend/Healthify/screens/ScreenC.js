@@ -5,7 +5,7 @@ import { fetchMeals, updateMeals, addMeals } from "../services/apiService";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import BtnNavbar from "../components/BtnNavbar";
-import { handleSearchFood } from "../services/apiService";
+import { handleSearchFood, handleLogout } from "../services/apiService";
 
 
 export default function ScreenC({navigation}) {
@@ -20,31 +20,66 @@ export default function ScreenC({navigation}) {
     const [modal , setModal] = useState(false);
     const [selectedMeal, setSelectedMeal] = useState(null)
     const [gram, setGram] = useState('100')
-    //const [isLoggedIn, setIsLoggedIn] = useState(false)
 
 
+    useEffect(() => {
+      const fetchLoginStatus = async () => {
+          const token = await AsyncStorage.getItem("AuthToken");
 
-  //  useEffect(() => {
-  //    const fetchLoginStatus = async () => {
-  //        const token = await AsyncStorage.getItem("AuthToken");
-  //        setIsLoggedIn(!!token);
-  //    };
+      };
+      fetchLoginStatus();
+  }, []);
 
-  //    fetchLoginStatus();
-  //    
-  //}, []);
+  const fetchData = async () => {
+          const data = await fetchMeals();
+          setMeals(data);
+        };
 
-    useEffect(() =>{
-        const fetchData = async () => {
-            
-            const data = await fetchMeals();
-            setMeals(data)
-            console.log('data',data)
-            console.log('meals',meals)
-        }
-            fetchData()
-        
-    } , [])
+
+    useEffect(() => {
+      const unsubscribe = navigation.addListener('focus', () => {
+          fetchData();
+      });
+      return unsubscribe;
+  }, [navigation]);
+  
+  useEffect(() => {
+      const unsubscribeBlur = navigation.addListener('blur', () => {
+          handleUpdateMeal(meals); 
+      });
+      return unsubscribeBlur;
+  }, [navigation, meals]);
+
+
+    const handleUpdateMeal = async (updatedMeal) => {
+      const token = await AsyncStorage.getItem("AuthToken");
+      if (!token) {
+          throw new Error("User not authicanted")};
+      
+      const responsesList =[]    
+      for (const meal of meals) {
+        const updatedData = {
+            id: meal.id,
+            Calories: meal.macros.Calories,
+            Carbs: meal.macros.Carbs,
+            Protein: meal.macros.Protein,
+            Fat: meal.macros.Fat,
+            };
+          
+        const response = await fetch(`http://192.168.55.106:5000/api/meals` , {
+            method : 'PUT',
+            headers : {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(updatedData)
+      });
+      const data = await response.json();
+      responsesList.push(data)
+      };
+      return responsesList;
+    };
+
 
     const addMacrosToMeal = (mealId, foodDescription, gram) => {
         const match = foodDescription.match(/Calories: (\d+)kcal \| Fat: ([\d.]+)g \| Carbs: ([\d.]+)g \| Protein: ([\d.]+)g/);
@@ -79,34 +114,8 @@ const handleAddMeal = async (newMeal) =>{
   setMeals(updatedMeal)
 }
 
-const handleUpdateMeal = async (updatedMeal) => {
-  const token = await AsyncStorage.getItem("AuthToken");
-  if (!token) {
-      throw new Error("User not authicanted")};
-  
-  const responsesList =[]    
-  for (const meal of meals) {
-    const updatedData = {
-        id: meal.id,
-        Calories: meal.macros.Calories,
-        Carbs: meal.macros.Carbs,
-        Protein: meal.macros.Protein,
-        Fat: meal.macros.Fat,
-        };
-      
-    const response = await fetch(`http://192.168.0.158:5000/api/meals` , {
-        method : 'PUT',
-        headers : {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(updatedData)
-  });
-  const data = await response.json();
-  responsesList.push(data)
-  };
-  return responsesList;
-};
+
+
 
 
     return (
@@ -179,8 +188,6 @@ const handleUpdateMeal = async (updatedMeal) => {
           </View>
         </View>
       </Modal>
-      <Button onPress={()=> {handleAddMeal(meals) ;console.log(meals)}} title="generate meals"></Button>
-      <Button onPress={()=> {handleUpdateMeal(meals); console.log('put data',meals)}} title="save"></Button>
     </ScrollView>
   </View>
   <BtnNavbar navigation={navigation} />

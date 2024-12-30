@@ -25,26 +25,38 @@ export default function ScreenD({navigation}) {
     useEffect(() => {
         const fetchLoginStatus = async () => {
             const token = await AsyncStorage.getItem("AuthToken");
-            setIsLoggedIn(!!token);
+            if (token) {
+                setIsLoggedIn(true);
+            }
         };
-
         fetchLoginStatus();
-        
     }, []);
 
-    useEffect(() =>{
+    useEffect(() => {
         const fetchData = async () => {
             const data = await fetchPersonalUserInfomations();
-            setPersonalData(data)
+            setPersonalData(data);
+        };
+        if (isLoggedIn) {
+            fetchData();
         }
-        if (isLoggedIn){
-            fetchData()
-        }
-    } , [isLoggedIn])
+    }, [isLoggedIn]);
+
+    useEffect(() => {
+          const unsubscribe = navigation.addListener('focus', () => {
+          });
+          return unsubscribe;
+      }, [navigation]);
+      
+    useEffect(() => {
+          const unsubscribeBlur = navigation.addListener('blur', () => {
+          });
+          return unsubscribeBlur;
+      }, [navigation]);
 
     const handleSave = async () => {
         const token = await AsyncStorage.getItem("AuthToken");
-        const response = await fetch('http://192.168.0.158:5000/api/user', {
+        const response = await fetch('http://192.168.55.106:5000/api/user', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -62,7 +74,7 @@ export default function ScreenD({navigation}) {
     };
 
     const handleUserLogout = async () => {
-        await handleLogout();
+        const data= await handleLogout();
         setPersonalData({
             firstName: '',
             lastName: '',

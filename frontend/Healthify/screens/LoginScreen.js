@@ -12,7 +12,7 @@ export default function LoginScreen({ navigation }){
             return;
         
         };
-        const response = await fetch('http://192.168.0.158:5000/api/login' , {
+        const response = await fetch('http://192.168.55.106:5000/api/login' , {
             method: 'POST',
             headers : {
                 'Content-Type': 'application/json'
@@ -24,7 +24,7 @@ export default function LoginScreen({ navigation }){
         if (response.ok){
             await AsyncStorage.setItem('AuthToken' , result.token);
             Alert.alert(result.message)
-            navigation.navigate('Home');
+            navigation.navigate('ScreenA');
         }
         else{
             Alert.alert(result.message)

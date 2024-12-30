@@ -6,7 +6,7 @@ export default function BtnNavbar ({navigation}) {
     return (
         <View style={styles.buttonContainer}>
         <View style={styles.wrapper}>
-          <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate('Home')}}>
+          <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate('ScreenA')}}>
             <Image source={require('../assets/home-icon.png')}  style={styles.homeIcon}/>
           </TouchableOpacity>
         </View>
