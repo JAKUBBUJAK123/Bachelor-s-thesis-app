@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import * as Location from 'expo-location';
 import { Accelerometer } from "expo-sensors";
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker,Polyline } from 'react-native-maps';
+import {getDistance} from 'geolib';
 
 import BtnNavbar from "../components/BtnNavbar";
 
@@ -10,6 +11,8 @@ export default function ScreenB({ navigation }) {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [address, setAddress] = useState(null);
+  const [coords, setCoords] = useState([]);
+  const [distance, setDistance] = useState(0);
 
   const [steps, setSteps] = useState(0);
   const [isCounting, setIsCounting] = useState(false);
@@ -17,6 +20,7 @@ export default function ScreenB({ navigation }) {
   const [lastTimeStamp , setLastTimeStamp] = useState(0);
 
 
+  //counting steps
   useEffect(() => {
     let subscription;
     
@@ -56,6 +60,7 @@ export default function ScreenB({ navigation }) {
     setSteps(0);
   };
 
+  //getting map permissions
   useEffect(() => {
     (async () => {
       
@@ -67,11 +72,60 @@ export default function ScreenB({ navigation }) {
 
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
+      setCoords(prevCoords => [...prevCoords, location.coords]);
 
       let reverseGeocode = await Location.reverseGeocodeAsync(location.coords);
       setAddress(reverseGeocode[0]);
     })();
+    const locationSubscription = Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 1000,
+        distanceInterval: 1,
+      },
+      (newLocation) => {
+        setLocation(newLocation);
+        setCoords(prevCoords => {
+          const updatedCoords = [...prevCoords, newLocation.coords];
+          calculateDistance(updatedCoords);
+          return updatedCoords;
+        });
+      }
+    );
+
+    return () => {
+      locationSubscription.then(sub => sub.remove());
+    };
   }, []);
+
+  //calculating distance
+  const calculateDistance = (coords) => {
+    let totalDistance = 0;
+    for (let i = 1; i < coords.length; i++) {
+      const start = { latitude: coords[i-1].latitude, longitude: coords[i-1].longitude };
+      const end = { latitude: coords[i].latitude, longitude: coords[i].longitude };
+      totalDistance += getDistance(start, end);
+    }
+    setDistance(totalDistance);
+  };
+
+
+  useEffect(() => {
+    const simulateMovement = () => {
+      const newLocation = {
+        coords: {
+          latitude: location ? location.coords.latitude + 0.0001 : 37.78825,
+          longitude: location ? location.coords.longitude + 0.0001 : -122.4324,
+        },
+      };
+      setLocation(newLocation);
+      setCoords(prevCoords => [...prevCoords, newLocation.coords]);
+    };
+
+    const interval = setInterval(simulateMovement, 2000); // Update location every 2 seconds
+
+    return () => clearInterval(interval);
+  }, [location]);
 
   let text = 'Waiting..';
   if (errorMsg) {
@@ -101,11 +155,17 @@ export default function ScreenB({ navigation }) {
             title="You are here!"
             description="This is your current location."
           />
+          <Polyline
+            coordinates={coords}
+            strokeColor="#de001e"
+            strokeWidth={6}
+          />
+
         </MapView>
       )}
       <View styles={styles.infoCont}>
-      <Text style={styles.text}>Steps</Text>
-      <Text style={styles.steps}>{steps}</Text>
+      <Text style={styles.text}>Steps: {steps}</Text>
+      <Text style={styles.text}>Distance: {(distance.toFixed(1))/1000} km</Text>
       </View>
 
       <BtnNavbar navigation={navigation}/>

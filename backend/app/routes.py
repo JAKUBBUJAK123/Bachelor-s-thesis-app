@@ -142,7 +142,6 @@ def register_routes(app):
     @token_required
     def add_meals(current_user):
         data = request.get_json()
-        print(data)
         for i in data:
             meal = Meal(
             name =i['name'],
@@ -162,7 +161,6 @@ def register_routes(app):
     @token_required
     def update_meal(current_user):
         data = request.get_json()
-        print(data)
         meal_id = data.get('id')
         meal = Meal.query.filter_by(id=meal_id, user_id=current_user.id).first()
         meal.Calories = data.get('Calories' , meal.Calories)

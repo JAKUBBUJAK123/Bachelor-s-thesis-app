@@ -85,9 +85,7 @@ export const fetchMeals = async () => {
     if (!response.ok) {
         throw new Error("Failed to fetch user data");
     }
-    console.log("Response status:", response.status);
     const data = await response.json();
-    //console.log(data)
     return data;
 }
 
@@ -125,4 +123,27 @@ export const updateMeals = async (mealId , updatedData) => {
         body: JSON.stringify(updatedData)
     });
     return response.json();
+}
+
+//For loginScreen
+export const fetchLogin = async (email , password) => {
+    if (!email || ! password) {
+            Alert.alert("Missing fields", 'Please enter your email and password')
+            return;
+            };
+    const response = await fetch(`${BASE_URL}/api/login` , {
+        method: 'POST',
+        headers : {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({email,password}),
+    });
+    const result = await response.json();
+    if (response.ok) {
+        await AsyncStorage.setItem('AuthToken' , result.token)
+        return result;
+    }
+    else{
+        return;
+    }
 }

@@ -27,7 +27,6 @@ export default function ScreenA({navigation}) {
   
       const fetchData = async () => {
           const data = await fetchMeals();
-          console.log(data)
           const totalKcal = data.reduce((acc, meal) => acc + meal.macros.Calories, 0);
           const totalFat = data.reduce((acc, meal) => acc + meal.macros.Fat, 0);
           const totalProtein = data.reduce((acc, meal) => acc + meal.macros.Protein, 0);
@@ -37,7 +36,6 @@ export default function ScreenA({navigation}) {
           setProtein(totalProtein)
           setCarbs(totalCarbs)
           setLoading(false)
-          console.log(totalKcal,totalFat,totalProtein)
       }
       
       useEffect(() => {
