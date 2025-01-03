@@ -147,3 +147,23 @@ export const fetchLogin = async (email , password) => {
         return;
     }
 }
+
+//For ScreenB
+export const fetchWalkingData = async () => {
+    const token = await getAuthToken();
+    if (!token) {
+        throw new Error("User not authicanted")
+    }
+    const response = await fetch(`${BASE_URL}/api/walking`, {
+        method: 'GET',
+        headers : {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+    }
+    const data = await response.json();
+    return data;
+}
+

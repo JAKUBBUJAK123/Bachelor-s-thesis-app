@@ -16,6 +16,7 @@ class User(db.Model):
     profile_picture =db.Column(db.String(255) , nullable=True)
 
     meals = db.relationship('Meal', back_populates='user')
+    walking = db.relationship('Walking' , back_populates='user')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password=password)
@@ -34,3 +35,12 @@ class Meal(db.Model):
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False) 
     user = db.relationship('User', back_populates='meals')
+
+class Walking(db.Model):
+    id = db.Column(db.Integer , primary_key=True)
+    steps = db.Column(db.Integer, nullable=False, default=0)
+    distance = db.Column(db.Integer, nullable=False, default=0)
+    burned_kcal = db.Column(db.Integer, nullable=False , default=0)
+
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False) 
+    user = db.relationship('User', back_populates='walking')

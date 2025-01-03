@@ -18,12 +18,18 @@ export default function ScreenA({navigation}) {
     const [loading , setLoading] = useState(true)
   
     useEffect(() => {
-      const fetchLoginStatus = async () => {
-        const token = await AsyncStorage.getItem("AuthToken");
+      const unsubscribe = navigation.addListener('focus', () => {
+          fetchData();
+      });
+      return unsubscribe;
+  }, [navigation]);
 
-      };
-      fetchLoginStatus();
-  }, []);
+    useEffect(() => {
+        const unsubscribeBlur = navigation.addListener('blur', () => {
+            resetNutritionalData(); 
+        });
+        return unsubscribeBlur;
+    }, [navigation]);
   
       const fetchData = async () => {
           const data = await fetchMeals();
@@ -38,20 +44,6 @@ export default function ScreenA({navigation}) {
           setLoading(false)
       }
       
-      useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-            fetchData();
-        });
-        return unsubscribe;
-    }, [navigation]);
-
-      useEffect(() => {
-          const unsubscribeBlur = navigation.addListener('blur', () => {
-              resetNutritionalData(); 
-          });
-          return unsubscribeBlur;
-      }, [navigation]);
-
     const resetNutritionalData = () => {
         setCalories(0);
         setFat(0);
@@ -70,15 +62,20 @@ export default function ScreenA({navigation}) {
         <View style={styles.component}>
           <Text style={styles.text}>Steps</Text>
           <ProgresBar progress={0.6} width={null} color={'#4caf50'} styles={styles.progresBar}/>
-          <Text style={styles.text}>Time</Text>
+          <Text style={styles.text}>Total Distance</Text>
+          <ProgresBar progress={0.6} width={null} color={'#4caf50'} styles={styles.progresBar}/>
           <Text style={styles.text}>Burned kcal</Text>
+          <ProgresBar progress={0.6} width={null} color={'#4caf50'} styles={styles.progresBar}/>
         </View>
   
         <View style={styles.component}>
-          <Text style={styles.text}>Calories</Text>
+          <Text style={styles.text}>Calories {calories}/ {maxKcal} </Text>
           <ProgresBar progress={calories / maxKcal} width={null} height={10} color={'#c761b6'} marginBottom={10} styles={styles.progresBar}/>
+          <Text style={styles.text}>Fat {fat}/ {maxKcal}</Text>
           <ProgresBar progress={fat / maxKcal} width={null} height={10} color={'#fcba03'} marginBottom={10} styles={styles.progresBar}/>
+          <Text style={styles.text}>Protein {protein}/ {maxKcal}</Text>
           <ProgresBar progress={protein / maxKcal} width={null} height={10} color={'#3498db'} marginBottom={10} styles={styles.progresBar}/>
+          <Text style={styles.text}>Carbs {carbs}/ {maxKcal}</Text>
           <ProgresBar progress={carbs / maxKcal} width={null} height={10} color={'#8714b5'} marginBottom={10} styles={styles.progresBar}/>
         </View>
   

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Button } from "react-native";
 import * as Location from 'expo-location';
 import { Accelerometer } from "expo-sensors";
 import MapView, { Marker,Polyline } from 'react-native-maps';
 import {getDistance} from 'geolib';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { fetchWalkingData } from "../services/apiService";
 import BtnNavbar from "../components/BtnNavbar";
 
 export default function ScreenB({ navigation }) {
@@ -18,6 +20,54 @@ export default function ScreenB({ navigation }) {
   const [isCounting, setIsCounting] = useState(false);
   const [lastY, setLastY] = useState(0);
   const [lastTimeStamp , setLastTimeStamp] = useState(0);
+
+//login system
+const fetchData = async () => {
+      const data = await fetchWalkingData();
+      console.log(data)
+      setSteps(data.steps)
+    }
+
+
+//update on screen change
+useEffect(() => {
+  const unsubscribeFocus = navigation.addListener('focus', () => {
+    fetchData();
+  });
+  return unsubscribeFocus;
+}, [navigation]);
+
+useEffect(() => {
+  const unsubscribeBlur = navigation.addListener('blur', () => {
+    handleSave(steps);
+  });
+  return unsubscribeBlur;
+}, [navigation, steps]);
+
+
+//fetchiing data
+let debounceTimeout;
+const handleSave = async (steps) => {
+  clearTimeout(debounceTimeout)
+  debounceTimeout = setTimeout(async () => {
+    const token = await AsyncStorage.getItem("AuthToken");
+
+    const response = await fetch('http://192.168.55.106:5000/api/walking', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        steps: steps,
+        distance: distance/1000,
+        burned_kcal: 0,
+      }),
+    });
+    const data = await response.json();
+    return data;
+  }, 500)
+};
 
 
   //counting steps
@@ -127,12 +177,8 @@ export default function ScreenB({ navigation }) {
     return () => clearInterval(interval);
   }, [location]);
 
-  let text = 'Waiting..';
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = `Lat: ${location.coords.latitude}, Long: ${location.coords.longitude}`;
-  }
+
+
 
   return (
     <View style={styles.container}>
@@ -166,6 +212,7 @@ export default function ScreenB({ navigation }) {
       <View styles={styles.infoCont}>
       <Text style={styles.text}>Steps: {steps}</Text>
       <Text style={styles.text}>Distance: {(distance.toFixed(1))/1000} km</Text>
+      <Button onPress={handleSave} title="click"></Button>
       </View>
 
       <BtnNavbar navigation={navigation}/>

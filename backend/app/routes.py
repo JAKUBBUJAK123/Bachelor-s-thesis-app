@@ -1,7 +1,7 @@
 import flask
 from . import db
 from flask import jsonify, request
-from .models import User , Meal
+from .models import User , Meal , Walking
 import datetime
 import jwt
 from functools import wraps
@@ -66,6 +66,12 @@ def register_routes(app):
         ]
         db.session.add_all(default_meals)
         db.session.commit()
+
+        new_walking_table = Walking(steps=0, distance=0 , burned_kcal=0, user_id=new_user.id)
+        db.session.add(new_walking_table)
+        db.session.commit()
+        print(new_walking_table)
+
         return jsonify({"message": "User registered successfully!"}), 201
     
 
@@ -169,3 +175,22 @@ def register_routes(app):
         meal.Fat = data.get('Fat' , meal.Fat)
         db.session.commit()
         return jsonify({"message" : 'succesffully updated meals'}), 200
+    
+
+    @app.route('/api/walking' , methods=['GET'])
+    @token_required
+    def get_walking_data(current_user):
+        walking = Walking.query.filter_by(user_id = current_user.id).first()
+        return jsonify({'steps' : walking.steps , 'distance' : walking.distance})
+    
+    
+    @app.route('/api/walking' , methods=['PUT'])
+    @token_required
+    def update_walking_data(current_user):
+        data = request.get_json()
+        walking = Walking.query.filter_by(user_id = current_user.id).first()
+        walking.steps = data.get('steps' , walking.steps)
+        walking.distance = data.get('distance' , walking.distance)
+        walking.burned_kcal = data.get('burned_kcal' , walking.burned_kcal)
+        db.session.commit()
+        return jsonify({'message' : "succesfully saved data"}) ,200

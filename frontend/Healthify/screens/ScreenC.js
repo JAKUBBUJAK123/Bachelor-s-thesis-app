@@ -50,34 +50,36 @@ export default function ScreenC({navigation}) {
       return unsubscribeBlur;
   }, [navigation, meals]);
 
-
+    let debounceTimeout;
     const handleUpdateMeal = async (updatedMeal) => {
-      const token = await AsyncStorage.getItem("AuthToken");
-      if (!token) {
-          throw new Error("User not authicanted")};
-      
-      const responsesList =[]    
-      for (const meal of meals) {
-        const updatedData = {
-            id: meal.id,
-            Calories: meal.macros.Calories,
-            Carbs: meal.macros.Carbs,
-            Protein: meal.macros.Protein,
-            Fat: meal.macros.Fat,
-            };
-          
-        const response = await fetch(`http://192.168.55.106:5000/api/meals` , {
-            method : 'PUT',
-            headers : {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(updatedData)
-      });
-      const data = await response.json();
-      responsesList.push(data)
-      };
-      return responsesList;
+      clearTimeout(debounceTimeout)
+      debounceTimeout = setTimeout(async () => {
+        const token = await AsyncStorage.getItem("AuthToken");
+        if (!token) {
+            throw new Error("User not authicanted")};
+        
+        const responsesList =[]    
+        for (const meal of meals) {
+          const updatedData = {
+              id: meal.id,
+              Calories: meal.macros.Calories,
+              Carbs: meal.macros.Carbs,
+              Protein: meal.macros.Protein,
+              Fat: meal.macros.Fat,
+              };
+          const response = await fetch(`http://192.168.55.106:5000/api/meals` , {
+              method : 'PUT',
+              headers : {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(updatedData)
+        });
+        const data = await response.json();
+        responsesList.push(data)
+        };
+        return responsesList;
+      }, 500)
     };
 
 
