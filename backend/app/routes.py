@@ -168,7 +168,14 @@ def register_routes(app):
     def update_meal(current_user):
         data = request.get_json()
         meal_id = data.get('id')
+        if not meal_id:
+            return jsonify({"error": "Meal ID is required"}), 400
+
         meal = Meal.query.filter_by(id=meal_id, user_id=current_user.id).first()
+
+        if not meal:
+            return jsonify({"error": "Meal not found or unauthorized"}), 404
+
         meal.Calories = data.get('Calories' , meal.Calories)
         meal.Carbs = data.get('Carbs' , meal.Carbs)
         meal.Protein = data.get('Protein' , meal.Protein)
@@ -193,4 +200,4 @@ def register_routes(app):
         walking.distance = data.get('distance' , walking.distance)
         walking.burned_kcal = data.get('burned_kcal' , walking.burned_kcal)
         db.session.commit()
-        return jsonify({'message' : "succesfully saved data"}) ,200
+        return jsonify({'message' : "succesfully saved data" , 'data' : data}) ,200

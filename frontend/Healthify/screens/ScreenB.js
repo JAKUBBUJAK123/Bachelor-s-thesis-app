@@ -16,40 +16,27 @@ export default function ScreenB({ navigation }) {
   const [coords, setCoords] = useState([]);
   const [distance, setDistance] = useState(0);
 
+  const [batchedSteps, setBatchedSteps] = useState(0);
+  const [batchedDistance, setBatchedDistance] = useState(0);
+
   const [steps, setSteps] = useState(0);
   const [isCounting, setIsCounting] = useState(false);
   const [lastY, setLastY] = useState(0);
   const [lastTimeStamp , setLastTimeStamp] = useState(0);
 
 //login system
-const fetchData = async () => {
-      const data = await fetchWalkingData();
-      console.log(data)
-      setSteps(data.steps)
-    }
-
-
-//update on screen change
 useEffect(() => {
-  const unsubscribeFocus = navigation.addListener('focus', () => {
-    fetchData();
-  });
-  return unsubscribeFocus;
-}, [navigation]);
-
-useEffect(() => {
-  const unsubscribeBlur = navigation.addListener('blur', () => {
-    handleSave(steps);
-  });
-  return unsubscribeBlur;
-}, [navigation, steps]);
+  const fetchData = async () => {
+    const data = await fetchWalkingData();
+    setSteps(data.steps);
+  };
+  fetchData();
+}, []);
 
 
 //fetchiing data
-let debounceTimeout;
-const handleSave = async (steps) => {
-  clearTimeout(debounceTimeout)
-  debounceTimeout = setTimeout(async () => {
+
+const handleSave = async (totalSteps, totalDistance) => {
     const token = await AsyncStorage.getItem("AuthToken");
 
     const response = await fetch('http://192.168.55.106:5000/api/walking', {
@@ -59,14 +46,13 @@ const handleSave = async (steps) => {
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
-        steps: steps,
-        distance: distance/1000,
+        steps: totalSteps,
+        distance: totalDistance/1000,
         burned_kcal: 0,
       }),
     });
     const data = await response.json();
     return data;
-  }, 500)
 };
 
 
@@ -89,6 +75,8 @@ const handleSave = async (steps) => {
             setLastTimeStamp(timestamp);
 
             setSteps(prevSteps => prevSteps + 1);
+            setBatchedSteps((prevBatchedSteps) => prevBatchedSteps + 1);
+
             setTimeout(() => {
               setIsCounting(false);
             }, 300);
@@ -106,58 +94,63 @@ const handleSave = async (steps) => {
     };
   }, [lastY, lastTimeStamp, isCounting]); 
 
-  const resetSteps = () => {
-    setSteps(0);
-  };
 
   //getting map permissions
   useEffect(() => {
-    (async () => {
-      
-      let { status } = await Location.requestForegroundPermissionsAsync();
+    const startLocationTracking = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+        console.error('Permission to access location was denied');
         return;
       }
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      setCoords(prevCoords => [...prevCoords, location.coords]);
+      const locationSubscription = Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High,
+          timeInterval: 1000,
+          distanceInterval: 1,
+        },
+        (newLocation) => {
+          setLocation(newLocation);
+          setCoords((prevCoords) => {
+            const updatedCoords = [...prevCoords, newLocation.coords];
+            const totalDistance = calculateDistance(updatedCoords);
+            setDistance(totalDistance);
+            setBatchedDistance(totalDistance);
+            return updatedCoords;
+          });
+        }
+      );
 
-      let reverseGeocode = await Location.reverseGeocodeAsync(location.coords);
-      setAddress(reverseGeocode[0]);
-    })();
-    const locationSubscription = Location.watchPositionAsync(
-      {
-        accuracy: Location.Accuracy.High,
-        timeInterval: 1000,
-        distanceInterval: 1,
-      },
-      (newLocation) => {
-        setLocation(newLocation);
-        setCoords(prevCoords => {
-          const updatedCoords = [...prevCoords, newLocation.coords];
-          calculateDistance(updatedCoords);
-          return updatedCoords;
-        });
-      }
-    );
-
-    return () => {
-      locationSubscription.then(sub => sub.remove());
+      return () => {
+        locationSubscription.then((sub) => sub.remove());
+      };
     };
+
+    startLocationTracking();
   }, []);
 
-  //calculating distance
   const calculateDistance = (coords) => {
     let totalDistance = 0;
     for (let i = 1; i < coords.length; i++) {
-      const start = { latitude: coords[i-1].latitude, longitude: coords[i-1].longitude };
+      const start = { latitude: coords[i - 1].latitude, longitude: coords[i - 1].longitude };
       const end = { latitude: coords[i].latitude, longitude: coords[i].longitude };
       totalDistance += getDistance(start, end);
     }
-    setDistance(totalDistance);
+    return totalDistance;
   };
+
+  // Send Batched Data Periodically
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (batchedSteps > 0 || batchedDistance > 0) {
+        await handleSave(steps, distance);
+        setBatchedSteps(0);
+        setBatchedDistance(0);
+      }
+    }, 6000); 
+    return () => clearInterval(interval);
+  }, [batchedSteps, batchedDistance, steps, distance]);
 
 
   useEffect(() => {
@@ -212,7 +205,6 @@ const handleSave = async (steps) => {
       <View styles={styles.infoCont}>
       <Text style={styles.text}>Steps: {steps}</Text>
       <Text style={styles.text}>Distance: {(distance.toFixed(1))/1000} km</Text>
-      <Button onPress={handleSave} title="click"></Button>
       </View>
 
       <BtnNavbar navigation={navigation}/>

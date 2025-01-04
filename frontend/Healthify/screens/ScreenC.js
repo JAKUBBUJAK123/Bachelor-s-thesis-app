@@ -21,39 +21,48 @@ export default function ScreenC({navigation}) {
     const [selectedMeal, setSelectedMeal] = useState(null)
     const [gram, setGram] = useState('100')
 
+    const [debounceTimeout, setDebounceTimeout] = useState(null);
 
-    useEffect(() => {
-      const fetchLoginStatus = async () => {
-          const token = await AsyncStorage.getItem("AuthToken");
 
-      };
-      fetchLoginStatus();
-  }, []);
-
-  const fetchData = async () => {
+    const fetchData = async () => {
           const data = await fetchMeals();
           setMeals(data);
         };
-
-
     useEffect(() => {
       const unsubscribe = navigation.addListener('focus', () => {
           fetchData();
       });
       return unsubscribe;
   }, [navigation]);
-  
-  useEffect(() => {
-      const unsubscribeBlur = navigation.addListener('blur', () => {
-          handleUpdateMeal(meals); 
-      });
-      return unsubscribeBlur;
-  }, [navigation, meals]);
 
-    let debounceTimeout;
+
+ // useEffect(() => {
+ //   clearTimeout(debounceTimeout);
+ //   debounceTimeout = setTimeout(() => {
+ //     handleUpdateMeal(meals);
+ //   }, 500);
+ // }, [meals]);
+
+
+  useEffect(() => {
+    // Clear the previous timeout
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+  
+    // Set a new timeout to wait before sending the request
+    const timeout = setTimeout(() => {
+      handleUpdateMeal(meals);
+    }, 500); // Wait for 500ms before sending request
+  
+    setDebounceTimeout(timeout);
+  
+    // Clean up timeout on component unmount or when `meals` changes
+    return () => clearTimeout(timeout);
+  }, [meals]);
+ 
+
     const handleUpdateMeal = async (updatedMeal) => {
-      clearTimeout(debounceTimeout)
-      debounceTimeout = setTimeout(async () => {
         const token = await AsyncStorage.getItem("AuthToken");
         if (!token) {
             throw new Error("User not authicanted")};
@@ -79,7 +88,6 @@ export default function ScreenC({navigation}) {
         responsesList.push(data)
         };
         return responsesList;
-      }, 500)
     };
 
 
