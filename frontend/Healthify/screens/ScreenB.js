@@ -6,7 +6,7 @@ import MapView, { Marker,Polyline } from 'react-native-maps';
 import {getDistance} from 'geolib';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { fetchWalkingData } from "../services/apiService";
+import { fetchPersonalUserInfomations, fetchWalkingData } from "../services/apiService";
 import BtnNavbar from "../components/BtnNavbar";
 
 export default function ScreenB({ navigation }) {
@@ -39,7 +39,7 @@ useEffect(() => {
 const handleSave = async (totalSteps, totalDistance) => {
     const token = await AsyncStorage.getItem("AuthToken");
 
-    const response = await fetch('http://192.168.55.106:5000/api/walking', {
+    const response = await fetch('http://192.168.0.158:5000/api/walking', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ const handleSave = async (totalSteps, totalDistance) => {
       body: JSON.stringify({
         steps: totalSteps,
         distance: totalDistance/1000,
-        burned_kcal: 0,
+        burned_kcal: totalSteps * 0.04,
       }),
     });
     const data = await response.json();

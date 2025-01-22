@@ -1,7 +1,9 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+import atexit
 
 
 db = SQLAlchemy()
@@ -18,11 +20,32 @@ def create_app():
     from .controllers.fatsecret import bp
     register_routes(app)
     app.register_blueprint(bp)
+    
+    def delete_daily_data():
+        with app.app_context():
+            from .models import Walking, Meal
 
-    @app.cli.command('init-db')
-    def init_db():
-        db.drop_all()
-        db.create_all()
 
+            walking_data = Walking.query.all()
+            for record in walking_data:
+                record.steps = 0
+                record.distance = 0
+                record.burned_kcal = 0
+        
+            meal_data = Meal.query.all()
+            for meal in meal_data:
+                meal.Calories = 0
+                meal.Carbs = 0
+                meal.Fat = 0
+                meal.Protein = 0
+        
+            db.session.commit()
+            print("Daily data reset completed.")
+
+    scheduler = BackgroundScheduler()
+    trigger = CronTrigger(hour=0, minute=0)
+    scheduler.add_job(func=delete_daily_data,trigger=trigger)
+    scheduler.start()
+    atexit.register(lambda: scheduler.shutdown(wait=False))
 
     return app

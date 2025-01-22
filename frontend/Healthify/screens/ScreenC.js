@@ -36,28 +36,17 @@ export default function ScreenC({navigation}) {
   }, [navigation]);
 
 
- // useEffect(() => {
- //   clearTimeout(debounceTimeout);
- //   debounceTimeout = setTimeout(() => {
- //     handleUpdateMeal(meals);
- //   }, 500);
- // }, [meals]);
-
-
   useEffect(() => {
-    // Clear the previous timeout
     if (debounceTimeout) {
       clearTimeout(debounceTimeout);
     }
   
-    // Set a new timeout to wait before sending the request
     const timeout = setTimeout(() => {
       handleUpdateMeal(meals);
-    }, 500); // Wait for 500ms before sending request
+    }, 500);
   
     setDebounceTimeout(timeout);
-  
-    // Clean up timeout on component unmount or when `meals` changes
+
     return () => clearTimeout(timeout);
   }, [meals]);
  
@@ -76,7 +65,7 @@ export default function ScreenC({navigation}) {
               Protein: meal.macros.Protein,
               Fat: meal.macros.Fat,
               };
-          const response = await fetch(`http://192.168.55.106:5000/api/meals` , {
+          const response = await fetch(`http://192.168.0.158:5000/api/meals` , {
               method : 'PUT',
               headers : {
                   'Content-Type': 'application/json',

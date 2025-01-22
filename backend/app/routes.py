@@ -188,7 +188,7 @@ def register_routes(app):
     @token_required
     def get_walking_data(current_user):
         walking = Walking.query.filter_by(user_id = current_user.id).first()
-        return jsonify({'steps' : walking.steps , 'distance' : walking.distance})
+        return jsonify({'steps' : walking.steps , 'distance' : walking.distance , 'burned_kcal' : walking.burned_kcal})
     
     
     @app.route('/api/walking' , methods=['PUT'])
