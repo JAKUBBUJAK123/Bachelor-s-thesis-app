@@ -40,7 +40,7 @@ export default function RegisterScreen({navigation}) {
     }
 
     const fetchData = async () => {
-        const response = await fetch('http://192.168.55.106:5000/api/register', {
+        const response = await fetch('http://10.0.2.2:5000/api/register', {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
@@ -62,7 +62,6 @@ export default function RegisterScreen({navigation}) {
             resetForm()
         }
     }
-
     return (
         <View style={style.Container}>
             <TouchableOpacity style={style.goBackButton} onPress={() => navigation.goBack()}>

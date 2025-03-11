@@ -14,7 +14,7 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     #app.config['SQLALCHEMY_ECHO'] = True
 
-    db.init_app(app=app)
+    db.init_app(app)
 
     from .routes import register_routes
     from .controllers.fatsecret import bp
@@ -42,10 +42,10 @@ def create_app():
             db.session.commit()
             print("Daily data reset completed.")
 
-    scheduler = BackgroundScheduler()
-    trigger = CronTrigger(hour=0, minute=0)
-    scheduler.add_job(func=delete_daily_data,trigger=trigger)
-    scheduler.start()
-    atexit.register(lambda: scheduler.shutdown(wait=False))
+            scheduler = BackgroundScheduler()
+            trigger = CronTrigger(hour=0, minute=0)
+            scheduler.add_job(func=delete_daily_data, trigger=trigger)
+            scheduler.start()
+            atexit.register(lambda: scheduler.shutdown(wait=False))
 
     return app

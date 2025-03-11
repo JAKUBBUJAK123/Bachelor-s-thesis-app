@@ -39,7 +39,7 @@ useEffect(() => {
 const handleSave = async (totalSteps, totalDistance) => {
     const token = await AsyncStorage.getItem("AuthToken");
 
-    const response = await fetch('http://192.168.0.158:5000/api/walking', {
+    const response = await fetch('http://10.0.2.2:5000/api/walking', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -153,22 +153,22 @@ const handleSave = async (totalSteps, totalDistance) => {
   }, [batchedSteps, batchedDistance, steps, distance]);
 
 
-  useEffect(() => {
-    const simulateMovement = () => {
-      const newLocation = {
-        coords: {
-          latitude: location ? location.coords.latitude + 0.0001 : 37.78825,
-          longitude: location ? location.coords.longitude + 0.0001 : -122.4324,
-        },
-      };
-      setLocation(newLocation);
-      setCoords(prevCoords => [...prevCoords, newLocation.coords]);
-    };
+//  useEffect(() => {
+//    const simulateMovement = () => {
+//      const newLocation = {
+//        coords: {
+//          latitude: location ? location.coords.latitude + 0.0001 : 37.78825,
+//          longitude: location ? location.coords.longitude + 0.0001 : -122.4324,
+//        },
+//      };
+//      setLocation(newLocation);
+//      setCoords(prevCoords => [...prevCoords, newLocation.coords]);
+//    };//
 
-    const interval = setInterval(simulateMovement, 2000); // Update location every 2 seconds
+//    const interval = setInterval(simulateMovement, 2000);//
 
-    return () => clearInterval(interval);
-  }, [location]);
+//    return () => clearInterval(interval);
+//  }, [location]);
 
 
 

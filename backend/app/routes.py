@@ -42,6 +42,7 @@ def register_routes(app):
 
     @app.route('/api/register', methods=['POST'])
     def register_user():
+        print('working')
         data = request.get_json()
         
         existing_user = User.query.filter_by(email=data['email']).first()
