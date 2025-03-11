@@ -123,10 +123,6 @@ export default function ScreenA({navigation}) {
           <ProgresBar progress={carbs / maxCarbs} width={null} height={10} color={'#8714b5'} marginBottom={10} styles={styles.progresBar}/>
         </View>
   
-        <View style={styles.component}>
-          <Text style={styles.text}>Recent activity</Text>
-          <ProgresBar progress={0.1} width={null} color={'#f39c12'} styles={styles.progresBar}/> 
-        </View>
   
         <View style={styles.component}>
           <Text style={styles.text}>Your current mood</Text>

@@ -87,6 +87,7 @@ export default function ScreenD({navigation}) {
         });
         setIsLoggedIn(false);
         Alert.alert("Logged out successfully");
+        navigation.navigate('StartScreen')
     };
 
 

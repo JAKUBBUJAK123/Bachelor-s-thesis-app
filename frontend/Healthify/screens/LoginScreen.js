@@ -8,9 +8,27 @@ export default function LoginScreen({ navigation }){
     const [password, setPassword] = useState('')
 
     const HandleLogin = async () => {
-        const result = await fetchLogin(email,password)
+        if (!email || ! password) {
+            Alert.alert("Missing fields", 'Please enter your email and password')
+            return;
+            };
+    const response = await fetch(`${BASE_URL}/api/login` , {
+        method: 'POST',
+        headers : {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({email,password}),
+    });
+    const result = await response.json();
+    if (response.ok) {
+        await AsyncStorage.setItem('AuthToken' , result.token);
         Alert.alert(result.message);
         navigation.navigate('ScreenA');
+    }
+    else{
+        Alert.alert(result.message);
+    }
+        
         
     }
 
@@ -61,17 +79,23 @@ const style = StyleSheet.create({
 
     },
     registerButton : {
-        backgroundColor: "#1e9c1c",
-        paddingVertical: 15,
-        paddingHorizontal: 15,
-        alignItems: "center",
-        borderRadius: 10,
-        marginTop: 10,
+        backgroundColor: '#1e9c1c',
+        paddingVertical: 16,
+        width: '60%',
+        alignItems: 'center',
+        borderRadius: 12,
+        marginTop: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 2, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5,
     },
     buttonText : {
-        color: "#FFF",
-        fontWeight: "bold",
-        fontSize: 18,
+        color: '#FFF',
+        fontWeight: 'bold',
+        fontSize: 20,
+        letterSpacing: 1,
     },
     goBackButton : {
         position : 'absolute',
