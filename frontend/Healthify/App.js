@@ -23,9 +23,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Home'>
-      <Stack.Screen name='ScreenA' component={ScreenA} options={{headerShown: false}}/>
         <Stack.Screen name='StartScreen' component={StartScreen} options={{headerShown: false}}/> 
-        
+        <Stack.Screen name='ScreenA' component={ScreenA} options={{headerShown: false}}/>
         <Stack.Screen name='ScreenB' component={ScreenB} options={{headerShown: false}}/>
         <Stack.Screen name='ScreenC' component={ScreenC} options={{headerShown: false}}/>
         <Stack.Screen name='ScreenD' component={ScreenD} options={{headerShown: false}}/>

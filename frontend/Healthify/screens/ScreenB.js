@@ -39,7 +39,7 @@ useEffect(() => {
 const handleSave = async (totalSteps, totalDistance) => {
     const token = await AsyncStorage.getItem("AuthToken");
 
-    const response = await fetch('http://10.0.2.2:5000/api/walking', {
+    const response = await fetch('http://192.168.0.158:5000/api/walking', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -140,7 +140,6 @@ const handleSave = async (totalSteps, totalDistance) => {
     return totalDistance;
   };
 
-  // Send Batched Data Periodically
   useEffect(() => {
     const interval = setInterval(async () => {
       if (batchedSteps > 0 || batchedDistance > 0) {

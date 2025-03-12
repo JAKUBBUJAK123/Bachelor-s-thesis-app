@@ -96,8 +96,6 @@ export default function ScreenD({navigation}) {
         <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
             <Text style={styles.Header}>My Profile Page</Text>
-            
-
             <View style={styles.profileStyle}>
                 <Image source={require('../assets/profile-picture.png')} style={styles.image}/>
                 <Text style={styles.nicknameText}>{personalData.nickname === "" ? 'My nickname' : personalData.nickname}</Text>
@@ -151,7 +149,6 @@ export default function ScreenD({navigation}) {
                         </View>
                         <TextInput style={styles.modalInput} placeholder="Weight" value={personalData.Weight} keyboardType="numeric" onChangeText={(t) => setPersonalData({...personalData , Weight: t})}/>
                         <TextInput style={styles.modalInput} placeholder="Height" value={personalData.Height} keyboardType="numeric" onChangeText={(t) => setPersonalData({...personalData , Height: t})}/>
-                        <TextInput style={styles.modalInput} placeholder="Profile picture" value={personalData.ProfilePicture} onChangeText={(t) => setPersonalData({...personalData , ProfilePicture: t})}/>
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity style={[styles.EditBtn , styles.primaryBtn]} onPress={handleSave}>
                                 <Text style={styles.btnText}>Save</Text>

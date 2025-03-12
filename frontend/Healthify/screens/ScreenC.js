@@ -65,7 +65,7 @@ export default function ScreenC({navigation}) {
               Protein: meal.macros.Protein,
               Fat: meal.macros.Fat,
               };
-          const response = await fetch(`http://10.0.2.2:5000/api/meals` , {
+          const response = await fetch(`http://192.168.0.158:5000/api/meals` , {
               method : 'PUT',
               headers : {
                   'Content-Type': 'application/json',
