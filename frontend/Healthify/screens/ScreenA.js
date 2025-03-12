@@ -97,47 +97,73 @@ export default function ScreenA({navigation}) {
 
     return (
       <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>Health tracker</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Health Tracker</Text>
+        </View>
+  
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.content}>
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Activity</Text>
+              <View style={styles.metricContainer}>
+                <Icon name="rocket" size={20} color="#4caf50" />
+                <Text style={styles.metricText}>Steps: {steps} /</Text>
+                <Text style={styles.metricText2}>10000 </Text>
+              </View>
+              <ProgresBar progress={steps / 10000} width={null} height={15} color={'#4caf50'} />
+              <View style={styles.metricContainer}>
+                <Icon name="map-marker" size={20} color="#25c1d9" />
+                <Text style={styles.metricText}>Distance: {distance} km /</Text>
+                <Text style={styles.metricText2}>10 km</Text>
+              </View>
+              <ProgresBar progress={distance / 10} width={null} height={15} color={'#25c1d9'} />
+              <View style={styles.metricContainer}>
+                <Icon name="fire" size={20} color="#d44e1e" />
+                <Text style={styles.metricText}>Burned: {burnedKcal} /</Text>
+                <Text style={styles.metricText2}>1000 kcal</Text>
+              </View>
+              <ProgresBar progress={burnedKcal / 1000} width={null} height={15} color={'#d44e1e'} />
+            </View>
+  
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Nutrition</Text>
+              <View style={styles.metricContainer}>
+                <Icon name="fire" size={20} color="#c761b6" />
+                <Text style={styles.metricText}>Calories: {calories} /</Text>
+                <Text style={styles.metricText2}>{maxKcal} kcal </Text>
+              </View>
+              <ProgresBar progress={calories / maxKcal} width={null} height={15} color={'#c761b6'} />
+              <View style={styles.metricContainer}>
+                <Icon name="tint" size={20} color="#fcba03" />
+                <Text style={styles.metricText}>Fat: {fat} /</Text>
+                <Text style={styles.metricText2}>{maxFat}g </Text>
+              </View>
+              <ProgresBar progress={fat / maxFat} width={null} height={15} color={'#fcba03'} />
+              <View style={styles.metricContainer}>
+                <Icon name="leaf" size={20} color="#3498db" />
+                <Text style={styles.metricText}>Protein: {protein} /</Text>
+                <Text style={styles.metricText2}>{maxProtein}g </Text>
+              </View>
+              <ProgresBar progress={protein / maxProtein} width={null} height={15} color={'#3498db'} />
+              <View style={styles.metricContainer}>
+                <Icon name="pagelines" size={20} color="#8714b5" />
+                <Text style={styles.metricText}>Carbs: {carbs} /</Text>
+                <Text style={styles.metricText2}>{maxCarbs}g </Text>
+              </View>
+              <ProgresBar progress={carbs / maxCarbs} width={null} height={15} color={'#8714b5'} />
+            </View>
+  
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Mood</Text>
+              <ProgresBar progress={mood / 100} width={null} height={15} color={'#9b59b6'} />
+              <MoodComponent style={styles.moodIcon} mood={mood} />
+            </View>
+          </View>
+        </ScrollView>
+  
+        <BtnNavbar navigation={navigation} />
       </View>
-  
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-      <View style={styles.content}>
-        <View style={styles.component}>
-          <Text style={styles.text}>Steps {steps}/10000</Text>
-          <ProgresBar progress={steps/6000} width={null} height={10} color={'#4caf50'} styles={styles.progresBar}/>
-          <Text style={styles.text}>Total Distance {distance}km/10km</Text>
-          <ProgresBar progress={distance} width={null} height={10} color={'#25c1d9'} styles={styles.progresBar}/>
-          <Text style={styles.text}>Burned kcal {burnedKcal}/1000 kcal</Text>
-          <ProgresBar progress={burnedKcal/2000} width={null} height={10} color={'#d44e1e'} styles={styles.progresBar}/>
-        </View>
-  
-        <View style={styles.component}>
-          <Text style={styles.text}>Calories {calories}/ {maxKcal} kcal </Text>
-          <ProgresBar progress={calories / maxKcal} width={null} height={10} color={'#c761b6'} marginBottom={10} styles={styles.progresBar}/>
-          <Text style={styles.text}>Fat {fat}/ {maxFat}g</Text>
-          <ProgresBar progress={fat / maxFat} width={null} height={10} color={'#fcba03'} marginBottom={10} styles={styles.progresBar}/>
-          <Text style={styles.text}>Protein {protein}/ {maxProtein}g</Text>
-          <ProgresBar progress={protein / maxProtein} width={null} height={10} color={'#3498db'} marginBottom={10} styles={styles.progresBar}/>
-          <Text style={styles.text}>Carbs {carbs}/ {maxCarbs}g</Text>
-          <ProgresBar progress={carbs / maxCarbs} width={null} height={10} color={'#8714b5'} marginBottom={10} styles={styles.progresBar}/>
-        </View>
-  
-  
-        <View style={styles.component}>
-          <Text style={styles.text}>Your current mood</Text>
-          <ProgresBar progress={mood/100} width={null} color={'#9b59b6'} height={10} styles={styles.progresBar}/> 
-          <MoodComponent mood={mood}/>
-        </View>
-
-      </View>
-      
-      </ScrollView>
-  
-      <BtnNavbar navigation={navigation}/>
-    </View>
-    )
-    
+    );
   }
   
   const styles = StyleSheet.create({
@@ -146,46 +172,60 @@ export default function ScreenA({navigation}) {
       backgroundColor: '#262322',
     },
     scrollContent: {
-      marginTop : 30,
       paddingHorizontal: 20,
-      alignItems: 'center',
       paddingBottom: 150,
-      marginBottom : 40
-  },
+    },
+    titleContainer: {
+      paddingVertical: 10,
+      alignItems: 'center',
+      backgroundColor: '#333',
+      paddingTop: 50,
+    },
     title: {
-      fontSize : 32,
-      color : '#fff',
-      marginBottom : 20
-    }, 
-    titleContainer : {
-      paddingVertical :10,
-      alignItems : 'center',
-      backgroundColor : '#333',
-      paddingTop : 50
+      fontSize: 32,
+      color: '#fff',
+      fontWeight: 'bold',
     },
-    content : {
-      width : '90%',
-      marginVertical : 10   
+    content: {
+      width: '100%',
+      marginVertical: 10,
     },
-    component : {
-      marginBottom : 10,
-      backgroundColor : '#3A3736',
-      paddingHorizontal : 60,
-      paddingVertical : 40,
-      borderRadius : 20,
+    card: {
+      backgroundColor: '#3A3736',
+      borderRadius: 20,
+      padding: 20,
+      marginBottom: 20,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.5,
       shadowRadius: 5,
     },
-    text : {
-      fontSize : 22,
-      color : '#fff',
-      marginVertical : 5,
+    cardTitle: {
+      fontSize: 24,
+      color: '#fff',
+      fontWeight: 'bold',
+      marginBottom: 15,
     },
-    progresBar: {
-      marginTop: 10,
-      borderRadius: 5,
-      
+    metricContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 15,
+      marginTop: 15
+    },
+    metricText: {
+      fontSize: 18,
+      color: '#fff',
+      marginLeft: 10,
+      fontWeight: 'bold',
+    },
+    metricText2: {
+      fontSize: 20,
+      color: '#a8a7a3',
+      marginLeft: 10,
+      fontWeight: 'bold',
+    },
+    moodIcon: {
+      alignSelf: 'center',
+      marginTop: 20,
     },
   });

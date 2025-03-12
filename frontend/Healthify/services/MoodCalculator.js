@@ -1,5 +1,5 @@
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { View } from 'react-native';
+import { View , StyleSheet, Text } from 'react-native';
 const normalize = (value, min, max) => (value - min) / (max - min);
 
 export const calculateMoodScore = (steps, totalDistance, burnedKcal, calories, fat, protein, carbs) => {
@@ -28,24 +28,47 @@ export const calculateMoodScore = (steps, totalDistance, burnedKcal, calories, f
     (normalizedFat * weightFat) +
     (normalizedProtein * weightProtein) +
     (normalizedCarbs * weightCarbs);
+    
   return Math.round(moodScore*100) ;
 };
 
 
     export const MoodComponent = ({ mood }) => {
       let moodIcon;
+      let text;
       if (mood < 25) {
-        moodIcon = <Icon name="frown-o" size={30} color="#e74c3c" />; 
-      } else if (mood <= 50) {
-        moodIcon = <Icon name="meh-o" size={30} color="#f1c40f" />; 
-      } else if (mood <= 75) {
-        moodIcon = <Icon name="smile-o" size={30} color="#2ecc71" />; 
+        moodIcon = <Icon name="frown-o" size={30} color="#e74c3c" />;
+        text = "You're just getting started! Every step counts!";
+      } else if (mood <= 50 && mood >= 25) {
+        moodIcon = <Icon name="meh-o" size={30} color="#f1c40f" />;
+        text = "You're making progress! Keep pushing forward!";
+      } else if (mood <= 75 && mood > 50) {
+        moodIcon = <Icon name="smile-o" size={30} color="#2ecc71" />;
+        text = "You're doing fantastic! Keep up the great work!";
       } else {
-        moodIcon = <Icon name="smile-o" size={30} color="#2ecc71" />; 
+        moodIcon = <Icon name="smile-o" size={30} color="#2ecc71" />;
+        text = "You're absolutely crushing it! Keep shining!";
       }
       return (
-        <View>
+        <View style={style.moodIcon}>
           {moodIcon}
+          <Text style={style.text}>{text}</Text>
         </View>
       );
-  }
+    };
+    
+    const style = StyleSheet.create({
+      moodIcon: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 10,
+        maxWidth: '80%'
+      },
+      text: {
+        fontSize: 15,
+        color: '#fff',
+        marginLeft: 10,
+        fontWeight: '300'
+      },
+    });

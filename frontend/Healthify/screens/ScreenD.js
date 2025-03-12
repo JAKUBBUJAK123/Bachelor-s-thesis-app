@@ -64,7 +64,7 @@ export default function ScreenD({navigation}) {
             },
             body: JSON.stringify(personalData)
         });
-        if (response.ok){
+        if (response.ok){   
             setIsModalVisible(false)
             Alert.alert("Profile updated" , "Your profile has been updated")
         }else{
