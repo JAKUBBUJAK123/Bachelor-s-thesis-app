@@ -1,8 +1,8 @@
 import flask
 from . import db
 from flask import jsonify, request
-from .models import User , Meal , Walking
-import datetime
+from .models import Daily_summary, User , Meal , Walking
+from datetime import datetime, timedelta
 import jwt
 from functools import wraps
 
@@ -42,7 +42,6 @@ def register_routes(app):
 
     @app.route('/api/register', methods=['POST'])
     def register_user():
-        print('working')
         data = request.get_json()
         
         existing_user = User.query.filter_by(email=data['email']).first()
@@ -71,7 +70,10 @@ def register_routes(app):
         new_walking_table = Walking(steps=0, distance=0 , burned_kcal=0, user_id=new_user.id)
         db.session.add(new_walking_table)
         db.session.commit()
-        print(new_walking_table)
+
+        new_daily_summary = Daily_summary(user_id=new_user.id , date=datetime.today() , total_steps=0 , total_distance=0 , total_burned_kcal=0)
+        db.session.add(new_daily_summary)
+        db.session.commit()
 
         return jsonify({"message": "User registered successfully!"}), 201
     
@@ -89,7 +91,7 @@ def register_routes(app):
         token = jwt.encode(
             {
                 'user_id' : user.id,
-                'exp' : datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+                'exp' : datetime.utcnow() + timedelta(hours=1)
             },
             AUTH_KEY,
             algorithm='HS256'
@@ -202,3 +204,22 @@ def register_routes(app):
         walking.burned_kcal = data.get('burned_kcal' , walking.burned_kcal)
         db.session.commit()
         return jsonify({'message' : "succesfully saved data" , 'data' : data}) ,200
+    
+
+    @app.route('/api/weakly_summary' , methods=['GET'])
+    @token_required 
+    def get_weekly_progress(current_user):
+        today = datetime.today()
+        week_age = today - timedelta(days=7)
+        weekly_data = Daily_summary.query.filter(Daily_summary.user_id == current_user.id, Daily_summary.date >= week_age).order_by(Daily_summary.date).all()
+
+        data = [{
+        'date': i.date.isoformat(),  
+        'steps': i.total_steps,
+        'distance': i.total_distance,
+        'burned_kcal': i.total_burned_kcal,
+        'calories_intake': i.total_calories_intake
+        } for i in weekly_data]
+        
+        return jsonify(data), 200
+    

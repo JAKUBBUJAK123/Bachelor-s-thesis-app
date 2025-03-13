@@ -30,6 +30,24 @@ export const fetchPersonalUserInfomations = async () => {
 }
 
 //For screenD
+export const getDailyProgress = async () => {
+    const token = await getAuthToken();
+    const response = await fetch(`${BASE_URL}/api/weakly_summary`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+    }
+    
+    const data = await response.json();
+    return data;
+}
+
+//For screenD
 export const updatePersonalUserInformations = async (updatedData) => {
     const token = await getAuthToken();
     if (!token) {

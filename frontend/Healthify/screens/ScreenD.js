@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Modal, TextInput} from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Picker} from '@react-native-picker/picker';
-import { updatePersonalUserInformations, fetchPersonalUserInfomations, handleLogout } from "../services/apiService";
+import { updatePersonalUserInformations, fetchPersonalUserInfomations, handleLogout , getDailyProgress } from "../services/apiService";
 
 import BtnNavbar from "../components/BtnNavbar";
 
@@ -41,6 +41,17 @@ export default function ScreenD({navigation}) {
             fetchData();
         }
     }, [isLoggedIn]);
+
+
+    useEffect(() => {
+        const fetchProgress = async () => {
+            const data = await getDailyProgress();
+            console.log(data);
+        };
+        if (isLoggedIn) {
+            fetchProgress();
+        }
+    }) , [isLoggedIn];
 
     useEffect(() => {
           const unsubscribe = navigation.addListener('focus', () => {

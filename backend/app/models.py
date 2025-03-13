@@ -1,5 +1,6 @@
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
+import datetime
 
 
 class User(db.Model):
@@ -17,6 +18,7 @@ class User(db.Model):
 
     meals = db.relationship('Meal', back_populates='user')
     walking = db.relationship('Walking' , back_populates='user')
+    daily_summary = db.relationship('Daily_summary', back_populates='user')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password=password)
@@ -44,3 +46,17 @@ class Walking(db.Model):
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False) 
     user = db.relationship('User', back_populates='walking')
+
+class Daily_summary(db.Model):
+    id = db.Column(db.Integer , primary_key=True)
+    date = db.Column(db.Date, nullable=False, index=True, default=datetime.date.today())
+    
+    total_steps = db.Column(db.Integer, nullable=False, default=0)
+    total_distance = db.Column(db.Float, nullable=False, default=0)
+    total_burned_kcal = db.Column(db.Integer, nullable=False, default=0)
+    total_calories_intake = db.Column(db.Float, nullable=False, default=0)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', back_populates='daily_summary')
+
+    
