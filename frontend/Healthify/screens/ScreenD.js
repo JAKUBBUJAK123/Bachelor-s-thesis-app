@@ -5,6 +5,7 @@ import {Picker} from '@react-native-picker/picker';
 import { updatePersonalUserInformations, fetchPersonalUserInfomations, handleLogout , getDailyProgress } from "../services/apiService";
 
 import BtnNavbar from "../components/BtnNavbar";
+import WeeklyDataChart from "../components/WeeklyDataChart";
 
 export default function ScreenD({navigation}) {
 
@@ -46,7 +47,6 @@ export default function ScreenD({navigation}) {
     useEffect(() => {
         const fetchProgress = async () => {
             const data = await getDailyProgress();
-            console.log(data);
         };
         if (isLoggedIn) {
             fetchProgress();
@@ -67,7 +67,7 @@ export default function ScreenD({navigation}) {
 
     const handleSave = async () => {
         const token = await AsyncStorage.getItem("AuthToken");
-        const response = await fetch('http://10.0.2.2:5000/api/user', {
+        const response = await fetch('http://192.168.0.227:5000/api/user', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -171,7 +171,10 @@ export default function ScreenD({navigation}) {
                     </View>
                 </View>
             </Modal>
-
+            
+            <View style={{ flex: 1, padding: 10 }}>
+                <WeeklyDataChart />
+            </View>
             <Text style={styles.sectionHeader}>Your Achievements</Text>
             <View style={styles.Achievements}>
                 <Image source={require('../assets/running-boot.png')} style={styles.iconImage}/>

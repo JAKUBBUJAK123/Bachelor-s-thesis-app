@@ -39,7 +39,7 @@ useEffect(() => {
 const handleSave = async (totalSteps, totalDistance) => {
     const token = await AsyncStorage.getItem("AuthToken");
 
-    const response = await fetch('http://192.168.0.158:5000/api/walking', {
+    const response = await fetch('http://192.168.0.227:5000/api/walking', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

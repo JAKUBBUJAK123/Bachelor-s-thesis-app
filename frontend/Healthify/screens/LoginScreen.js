@@ -12,7 +12,7 @@ export default function LoginScreen({ navigation }){
             Alert.alert("Missing fields", 'Please enter your email and password')
             return;
             };
-    const response = await fetch(`${BASE_URL}/api/login` , {
+    const response = await fetch(`http://192.168.0.227:5000/api/login` , {
         method: 'POST',
         headers : {
             'Content-Type': 'application/json'
