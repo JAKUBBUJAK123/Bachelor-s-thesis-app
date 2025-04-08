@@ -175,7 +175,8 @@ export default function ScreenD({navigation}) {
             <View style={{ flex: 1, padding: 10 }}>
                 <WeeklyDataChart />
             </View>
-            <Text style={styles.sectionHeader}>Your Achievements</Text>
+
+            {/* <Text style={styles.sectionHeader}>Your Achievements</Text>
             <View style={styles.Achievements}>
                 <Image source={require('../assets/running-boot.png')} style={styles.iconImage}/>
                 <Image source={require('../assets/running-man.png')} style={styles.iconImage}/>
@@ -184,7 +185,7 @@ export default function ScreenD({navigation}) {
             <Text style={styles.sectionHeader}>Your Best Achievement</Text>
             <View style={styles.bestAchievement}>
                 <Image source={require('../assets/achivement.png')} style={styles.bestImage}/>
-            </View>
+            </View> */}
                   </ScrollView>
         <View style={styles.navbarContainer}>
             <BtnNavbar navigation={navigation} />

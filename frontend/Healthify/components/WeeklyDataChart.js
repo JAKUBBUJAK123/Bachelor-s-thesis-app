@@ -26,7 +26,7 @@ export default function WeeklyDataChart() {
     if (weeklyData.length === 0) {
         return <Text style={{ textAlign: "center", marginTop: 20, fontSize: 16 }}>No data available</Text>;
     };
-    const labels = weeklyData.map((entry) => entry.date || 'N/A');
+    const labels = weeklyData.map((entry) => entry.date.substring(5) || 'N/A');
     const stepsData = weeklyData.map((entry) => entry.steps ||0);
     const burnedCalories = weeklyData.map((entry) => entry.burned_kcal || 0);
     const intakeCalories = weeklyData.map((entry) => entry.calories_intake || 0);

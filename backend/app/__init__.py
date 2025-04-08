@@ -68,7 +68,7 @@ def create_app():
             print("Daily data reset completed.")
 
     scheduler = BackgroundScheduler()
-    trigger = CronTrigger(hour=15, minute=35)
+    trigger = CronTrigger(hour=15, minute=33)
     scheduler.add_job(func=delete_daily_data, trigger=trigger)
     scheduler.start()
     atexit.register(lambda: scheduler.shutdown(wait=False))
