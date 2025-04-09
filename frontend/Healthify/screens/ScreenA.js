@@ -6,9 +6,14 @@ import { calculateMoodScore } from '../services/MoodCalculator';
 import { MoodComponent } from '../services/MoodCalculator';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+import { useTheme } from '../services/ThemeContext';
 import BtnNavbar from "../components/BtnNavbar";
+import ToggleTheme from '../components/ToogleTheme';
 
 export default function ScreenA({navigation}) {
+
+    const { theme } = useTheme();
+
 
     const [maxKcal , setMaxKcal] = useState(3000)
     const [maxFat, setMaxFat] = useState(3000)
@@ -96,67 +101,89 @@ export default function ScreenA({navigation}) {
 
 
     return (
-      <View style={styles.container}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Health Tracker</Text>
-        </View>
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <ToggleTheme/>
+      <View style={[styles.titleContainer, { backgroundColor: theme.cardBackground }]}>
+        <Text style={[styles.title, { color: theme.text }]}>Health Tracker</Text>
+      </View>
   
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.content}>
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Activity</Text>
+            <View style={[styles.card , { backgroundColor: theme.cardBackground }]}>
+              <Text style={[styles.cardTitle , {color : theme.text}]}>Activity</Text>
               <View style={styles.metricContainer}>
                 <Icon name="rocket" size={20} color="#4caf50" />
-                <Text style={styles.metricText}>Steps: {steps} /</Text>
-                <Text style={styles.metricText2}>10000 </Text>
+                <Text style={[styles.metricText ,{color : theme.text}]}>Steps:</Text>
+                  <View style={styles.metricRight}>
+                    <Text style={[styles.metricText , {color : theme.text}]}>{steps}</Text>
+                    <Text style={[styles.metricText2 , {color : theme.text}]}> / 10000</Text>
+                  </View>
               </View>
               <ProgresBar progress={steps / 10000} width={null} height={15} color={'#4caf50'} />
               <View style={styles.metricContainer}>
                 <Icon name="map-marker" size={20} color="#25c1d9" />
-                <Text style={styles.metricText}>Distance: {distance} km /</Text>
-                <Text style={styles.metricText2}>10 km</Text>
+                <Text style={[styles.metricText ,{color : theme.text}]}>Distance:</Text>
+                <View style={styles.metricRight}>
+                  <Text style={[styles.metricText, {color : theme.text}]}>{distance} /</Text>
+                  <Text style={[styles.metricText2 ,{color : theme.text}]}> 10 km</Text>
+                </View>
               </View>
               <ProgresBar progress={distance / 10} width={null} height={15} color={'#25c1d9'} />
               <View style={styles.metricContainer}>
                 <Icon name="fire" size={20} color="#d44e1e" />
-                <Text style={styles.metricText}>Burned: {burnedKcal} /</Text>
-                <Text style={styles.metricText2}>1000 kcal</Text>
+                <Text style={[styles.metricText , {color : theme.text}] }>Burned:</Text>
+                <View style={[styles.metricRight, {color : theme.text}]}>
+                <Text style={[styles.metricText , {color : theme.text}]}>{burnedKcal} /</Text>
+                <Text style={[styles.metricText2 , {color : theme.text}]}> 1000 kcal</Text>
+                </View>
               </View>
               <ProgresBar progress={burnedKcal / 1000} width={null} height={15} color={'#d44e1e'} />
             </View>
   
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Nutrition</Text>
+            <View style={[styles.card , { backgroundColor: theme.cardBackground }]}>
+              <Text style={[styles.cardTitle , {color : theme.text}]}>Nutrition</Text>
               <View style={styles.metricContainer}>
                 <Icon name="fire" size={20} color="#c761b6" />
-                <Text style={styles.metricText}>Calories: {calories} /</Text>
-                <Text style={styles.metricText2}>{maxKcal} kcal </Text>
+                <Text style={[styles.metricText , {color : theme.text}]}>Calories:</Text>
+                <View style={[styles.metricRight , {color : theme.text}]}>
+                  <Text style={[styles.metricText , {color : theme.text}]}>{calories} /</Text>
+                  <Text style={[styles.metricText2 , {color : theme.text}]}> {maxKcal} kcal </Text>
+                </View>
               </View>
               <ProgresBar progress={calories / maxKcal} width={null} height={15} color={'#c761b6'} />
               <View style={styles.metricContainer}>
                 <Icon name="tint" size={20} color="#fcba03" />
-                <Text style={styles.metricText}>Fat: {fat} /</Text>
-                <Text style={styles.metricText2}>{maxFat}g </Text>
+                <Text style={[styles.metricText , {color : theme.text}]}>Fat:</Text>
+                <View style={[styles.metricRight , {color : theme.text}]}>
+                  <Text style={[styles.metricText, {color : theme.text}]}>{fat} /</Text> 
+                <Text style={[styles.metricText2 , {color : theme.text}]}> {maxFat}g </Text>
+                </View>
               </View>
               <ProgresBar progress={fat / maxFat} width={null} height={15} color={'#fcba03'} />
               <View style={styles.metricContainer}>
                 <Icon name="leaf" size={20} color="#3498db" />
-                <Text style={styles.metricText}>Protein: {protein} /</Text>
-                <Text style={styles.metricText2}>{maxProtein}g </Text>
+                <Text style={[styles.metricText, {color : theme.text}]}>Protein:</Text>
+                <View style={[styles.metricRight , {color : theme.text}]}>
+                  <Text style={[styles.metricText , {color : theme.text}]}>{protein} /</Text>
+                  <Text style={[styles.metricText2 , {color : theme.text}]}> {maxProtein}g </Text>
+                </View>
               </View>
               <ProgresBar progress={protein / maxProtein} width={null} height={15} color={'#3498db'} />
               <View style={styles.metricContainer}>
                 <Icon name="pagelines" size={20} color="#8714b5" />
-                <Text style={styles.metricText}>Carbs: {carbs} /</Text>
-                <Text style={styles.metricText2}>{maxCarbs}g </Text>
+                <Text style={[styles.metricText , {color : theme.text}]}>Carbs:</Text>
+                <View style={[styles.metricRight , {color : theme.text}]}>
+                  <Text style={[styles.metricText , {color : theme.text}]}>{carbs} /</Text>
+                <Text style={[styles.metricText2 , {color : theme.text}]}> {maxCarbs}g </Text>
+                </View>
               </View>
               <ProgresBar progress={carbs / maxCarbs} width={null} height={15} color={'#8714b5'} />
             </View>
   
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Mood</Text>
+            <View style={[styles.card , { backgroundColor: theme.cardBackground }]}>
+              <Text style={[styles.cardTitle , {color : theme.text}]}>Mood</Text>
               <ProgresBar progress={mood / 100} width={null} height={15} color={'#9b59b6'} />
-              <MoodComponent style={styles.moodIcon} mood={mood} />
+              <MoodComponent style={styles.moodIcon } mood={mood} />
             </View>
           </View>
         </ScrollView>
@@ -221,11 +248,16 @@ export default function ScreenA({navigation}) {
     metricText2: {
       fontSize: 20,
       color: '#a8a7a3',
-      marginLeft: 10,
+      marginLeft: 0,
       fontWeight: 'bold',
+    },
+    metricRight: {
+      flexDirection: 'row',
+      marginLeft: 'auto',
     },
     moodIcon: {
       alignSelf: 'center',
       marginTop: 20,
     },
+
   });

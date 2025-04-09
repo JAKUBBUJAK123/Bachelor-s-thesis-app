@@ -6,9 +6,12 @@ import { updatePersonalUserInformations, fetchPersonalUserInfomations, handleLog
 
 import BtnNavbar from "../components/BtnNavbar";
 import WeeklyDataChart from "../components/WeeklyDataChart";
+import { useTheme } from "../services/ThemeContext";
+import ToggleTheme from "../components/ToogleTheme";
 
 export default function ScreenD({navigation}) {
 
+    const { theme } = useTheme();
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [personalData, setPersonalData] = useState({
@@ -104,17 +107,18 @@ export default function ScreenD({navigation}) {
 
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container , {backgroundColor: theme.background}]}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-            <Text style={styles.Header}>My Profile Page</Text>
-            <View style={styles.profileStyle}>
+            <ToggleTheme />
+            <Text style={[styles.Header , {color : theme.text}]}>My Profile Page</Text>
+            <View style={[styles.profileStyle , {backgroundColor : theme.cardBackground}] }>
                 <Image source={require('../assets/profile-picture.png')} style={styles.image}/>
-                <Text style={styles.nicknameText}>{personalData.nickname === "" ? 'My nickname' : personalData.nickname}</Text>
-                <Text style={styles.nicknameText}>Name: {personalData.firstName === "" ? '' : personalData.firstName} {personalData.lastName === "" ? '' : personalData.lastName}</Text>
-                <Text style={styles.nicknameText}>Age: {personalData.age === "" ? '' : personalData.age}</Text>
-                <Text style={styles.nicknameText}>Gender: {personalData.Gender === "" ? '' : personalData.Gender}</Text>
-                <Text style={styles.nicknameText}>Weight: {personalData.Weight === "" ? '' : personalData.Weight} kg</Text>
-                <Text style={styles.nicknameText}>Height: {personalData.Height === "" ? '' : personalData.Height} cm</Text>
+                <Text style={[styles.nicknameText, {color : theme.text}]}>{personalData.nickname === "" ? 'My nickname' : personalData.nickname}</Text>
+                <Text style={[styles.nicknameText , {color: theme.text}]}>Name: {personalData.firstName === "" ? '' : personalData.firstName} {personalData.lastName === "" ? '' : personalData.lastName}</Text>
+                <Text style={[styles.nicknameText , {color: theme.text}]}>Age: {personalData.age === "" ? '' : personalData.age}</Text>
+                <Text style={[styles.nicknameText , {color: theme.text}]}>Gender: {personalData.Gender === "" ? '' : personalData.Gender}</Text>
+                <Text style={[styles.nicknameText , {color: theme.text}]}>Weight: {personalData.Weight === "" ? '' : personalData.Weight} kg</Text>
+                <Text style={[styles.nicknameText , {color: theme.text}]}>Height: {personalData.Height === "" ? '' : personalData.Height} cm</Text>
 
                 {isLoggedIn && (
                     <>

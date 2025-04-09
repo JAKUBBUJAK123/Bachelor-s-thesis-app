@@ -3,8 +3,12 @@ import { View, Text, ScrollView, Dimensions, ActivityIndicator , StyleSheet} fro
 import { LineChart, BarChart } from "react-native-chart-kit";
 import { getDailyProgress } from "../services/apiService";
 
+import { ThemeProvider } from "../services/ThemeContext";
+import { useTheme } from "../services/ThemeContext";
+
 export default function WeeklyDataChart() {
 
+    const { theme } = useTheme();
     const screenWidth = Dimensions.get("window").width;
 
     const [weeklyData, setWeeklyData] = useState([]);
@@ -19,6 +23,15 @@ export default function WeeklyDataChart() {
         fetchProgress();
     }, []);
 
+    const chartConfig = {
+        backgroundGradientFrom: theme.chartGradientFrom,
+        backgroundGradientTo: theme.chartGradientTo,
+        decimalPlaces: 0,
+        color: (opacity = 1) => theme.chartLineColor,
+        labelColor: (opacity = 1) => theme.text
+    
+    };
+
     if (loading) {
         return <ActivityIndicator size="large" color="#4287f5" />
     };
@@ -32,10 +45,10 @@ export default function WeeklyDataChart() {
     const intakeCalories = weeklyData.map((entry) => entry.calories_intake || 0);
 
     return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.title}>Weekly Progress</Text>
+        <ScrollView style={[styles.container , {backgroundColor : theme.cardBackground}]}>
+            <Text style={[styles.title, {color : theme.text}]}>Weekly Progress</Text>
 
-            <Text style={styles.chartTitle}>Steps Over the Week</Text>
+            <Text style={[styles.chartTitle , {color : theme.text}]}>Steps Over the Week</Text>
             <ScrollView horizontal={true} style={{ marginBottom: 20 }}>
             <LineChart
                 data={{ labels, datasets: [{ data: stepsData}] }}
@@ -51,7 +64,7 @@ export default function WeeklyDataChart() {
             />
             </ScrollView>
 
-            <Text style={styles.chartTitle}>Calories Intake</Text>
+            <Text style={[styles.chartTitle , {color : theme.text}]}>Calories Intake</Text>
             <ScrollView horizontal={true} style={{ marginBottom: 20 }}>
     <BarChart
         data={{
@@ -74,7 +87,7 @@ export default function WeeklyDataChart() {
         
     />
 </ScrollView>
-    <Text style={styles.chartTitle}>Burned Calories</Text>
+    <Text style={[styles.chartTitle , {color : theme.text}]}>Burned Calories</Text>
 <ScrollView horizontal={true} style={{ marginBottom: 20 }}>
     <BarChart
         data={{
@@ -104,14 +117,7 @@ export default function WeeklyDataChart() {
     
 }
 
-const chartConfig = {
-    backgroundGradientFrom: "#3A3736",
-    backgroundGradientTo: "#262322",
-    decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
 
-};
 
 const styles = StyleSheet.create({
     container: {

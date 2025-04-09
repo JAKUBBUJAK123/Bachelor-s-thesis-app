@@ -1,5 +1,6 @@
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { View , StyleSheet, Text } from 'react-native';
+import { useTheme } from '../services/ThemeContext';
 const normalize = (value, min, max) => (value - min) / (max - min);
 
 export const calculateMoodScore = (steps, totalDistance, burnedKcal, calories, fat, protein, carbs) => {
@@ -34,6 +35,8 @@ export const calculateMoodScore = (steps, totalDistance, burnedKcal, calories, f
 
 
     export const MoodComponent = ({ mood }) => {
+
+      const { theme } = useTheme();
       let moodIcon;
       let text;
       if (mood < 25) {
@@ -52,7 +55,7 @@ export const calculateMoodScore = (steps, totalDistance, burnedKcal, calories, f
       return (
         <View style={style.moodIcon}>
           {moodIcon}
-          <Text style={style.text}>{text}</Text>
+          <Text style={[style.text , {color : theme.text}]}>{text}</Text>
         </View>
       );
     };

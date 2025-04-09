@@ -8,8 +8,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { fetchPersonalUserInfomations, fetchWalkingData } from "../services/apiService";
 import BtnNavbar from "../components/BtnNavbar";
+import { useTheme } from "../services/ThemeContext";
+import ToggleTheme from "../components/ToogleTheme";
 
 export default function ScreenB({ navigation }) {
+
+  const { theme } = useTheme();
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [address, setAddress] = useState(null);
@@ -173,8 +177,9 @@ const handleSave = async (totalSteps, totalDistance) => {
 
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Your Current Localization</Text>
+    <View style={[styles.container , {backgroundColor : theme.background}]}>
+      <ToggleTheme/>
+      <Text style={[styles.text , {color : theme.text}]}>Your Current Localization</Text>
       {location && (
         <MapView
           style={styles.map}
@@ -202,8 +207,8 @@ const handleSave = async (totalSteps, totalDistance) => {
         </MapView>
       )}
       <View styles={styles.infoCont}>
-      <Text style={styles.text}>Steps: {steps}</Text>
-      <Text style={styles.text}>Distance: {(distance.toFixed(1))/1000} km</Text>
+      <Text style={[styles.text , {color : theme.text}]}>Steps: {steps}</Text>
+      <Text style={[styles.text , {color : theme.text}]}>Distance: {(distance.toFixed(1))/1000} km</Text>
       </View>
 
       <BtnNavbar navigation={navigation}/>

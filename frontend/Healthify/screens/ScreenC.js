@@ -6,9 +6,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import BtnNavbar from "../components/BtnNavbar";
 import { handleSearchFood, handleLogout } from "../services/apiService";
+import { useTheme } from "../services/ThemeContext";
+import ToggleTheme from "../components/ToogleTheme";
 
 
 export default function ScreenC({navigation}) {
+    const { theme } = useTheme();
     const [foodQuery , setFoodQuery] = useState("");
     const [results, setResults] = useState(null);
     const [meals, setMeals] = useState([
@@ -118,16 +121,17 @@ const handleAddMeal = async (newMeal) =>{
 
 
     return (
-<View style={style.Container}>
-  <Text style={style.Header}>Food Tracker</Text>
+<View style={[style.Container , {backgroundColor : theme.background}]}>
+<ToggleTheme />
+  <Text style={[style.Header , {color : theme.text}]}>Food Tracker</Text>
 
   <View style={style.wrapper}>
     <ScrollView contentContainerStyle={style.scrollContent}>
     {meals.map((meal) => (
-        <View key={meal.id} style={style.ListComponent}>
+        <View key={meal.id} style={[style.ListComponent , {backgroundColor : theme.cardBackground}]}>
           <View>
-            <Text style={style.listText}>{meal.name}</Text>
-            <Text style={style.macroText}>
+            <Text style={[style.listText , {color : theme.text}]}>{meal.name}</Text>
+            <Text style={[style.macroText , {color : theme.text}]}>
               Calories: {meal.macros.Calories} kcal, C: {meal.macros.Carbs} g, P: {meal.macros.Protein} g, F: {meal.macros.Fat} g
             </Text>
           </View>
@@ -138,14 +142,14 @@ const handleAddMeal = async (newMeal) =>{
               setModal(true);
             }}
           >
-            <Text style={style.PlusText}>+</Text>
+            <Text style={[style.PlusText]}>+</Text>
           </TouchableOpacity>
         </View>
       ))}
 
       <Modal visible={modal} animationType="slide" transparent={true} onRequestClose={() => setModal(false)}>
         <View style={style.modalOverlay}>
-          <View style={style.modalContent}>
+          <View style={[style.modalContent , {backgroundColor : theme.cardBackground}]}>
             <TextInput
               style={style.searchInput}
               placeholder="Search for food"
@@ -177,7 +181,7 @@ const handleAddMeal = async (newMeal) =>{
                     </View>
                   ))
                 ) : (
-                  <Text style={style.noResultsText}>No results found</Text>
+                  <Text style={[style.noResultsText , {color : theme.text}]}>No results found</Text>
                 )}
               </ScrollView>
             </View>
@@ -228,6 +232,9 @@ const style = StyleSheet.create({
       paddingVertical: 10,
       paddingHorizontal: 15,
       borderRadius: 25,
+    },
+    PlusText : {
+      color: '#000'
     },
     Header: {
       fontSize: 24,
