@@ -36,7 +36,7 @@ class Meal(db.Model):
     Protein = db.Column(db.Float() , nullable=False, default=0)
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False) 
-    user = db.relationship('User', back_populates='meals')
+    user = db.relationship('User', back_populates="meals")
 
 class Walking(db.Model):
     id = db.Column(db.Integer , primary_key=True)
