@@ -2,3 +2,4 @@ backend/venv/
 frontend/node_modules/
 backend/**/__pycahe__/
 backend/__pycahe__/
+backend/.env

@@ -5,10 +5,12 @@ from .models import Daily_summary, User , Meal , Walking
 from datetime import datetime, timedelta
 import jwt
 from functools import wraps
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 
-AUTH_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
-
+AUTH_KEY = os.getenv('AUTH_KEY')
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):

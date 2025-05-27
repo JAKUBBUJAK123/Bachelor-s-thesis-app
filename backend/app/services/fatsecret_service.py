@@ -1,9 +1,12 @@
 import requests
 from flask import jsonify
 from pyfatsecret import Fatsecret
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
-API_KEY = '3c84ba2d72774ebe96d2bce5adda4314'
-KEY_SECRET = 'f429bc02cb724d419db4a0957455475a'
+API_KEY = os.getenv('FatSEcret_API_KEY')
+KEY_SECRET = os.getenv('FatSEcret_KEY_SECRET')
 
 fs = Fatsecret(API_KEY,KEY_SECRET)
 
