@@ -20,10 +20,10 @@ Healthify is a mobile application designed to help users track their health and 
 ---
 ## Screenshots
 
-![Food Screen](frontend\Healthify\assets\screenshots\FoodScreen.jpg)
-![Login Screen](frontend\Healthify\assets\screenshots\LoginScreen.jpg)
-![Profile Edit Form](frontend\Healthify\assets\screenshots\ProfileEditForm.jpg)
-![Register Screen](frontend\Healthify\assets\screenshots\RegisterScreen.jpg)
+![Food Screen](frontend/Healthify/assets/screenshots/FoodScreen.jpg)
+![Login Screen](frontend/Healthify/assets/screenshots/LoginScreen.jpg)
+![Profile Edit Form](frontend/Healthify/assets/screenshots/ProfileEditForm.jpg)
+![Register Screen](frontend/Healthify/assets/screenshots/RegisterScreen.jpg)
 ---
 ## License
 This project is part of a bachelor's thesis and its for educational purposes.
