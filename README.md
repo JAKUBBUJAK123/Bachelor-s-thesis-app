@@ -18,6 +18,10 @@ Healthify is a mobile application designed to help users track their health and 
 - **APIs:** FatSecret (nutrition data)
 - **Database:** SQLite
 ---
+## Screenshots
+
+![Food Screen](assets/screenshots/FoodScreen.jpg)
+---
 ## License
 This project is part of a bachelor's thesis and its for educational purposes.
 ---
